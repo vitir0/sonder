@@ -348,6 +348,7 @@
       
       try {
         // Отправка данных на сервер
+        
         const response = await fetch('/register', {
           method: 'POST',
           headers: {
@@ -397,7 +398,8 @@
       
       try {
         // Отправка данных на сервер
-        const response = await fetch('/login', {
+        const API_BASE_URL = 'http://192.168.3.52:5000
+        const response = await fetch(`${API_BASE_URL}/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
