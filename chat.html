@@ -1,0 +1,670 @@
+<!-- chat.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PixelGit - Messenger</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    /* Общие стили */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      background-color: #0d1117;
+      color: #c9d1d9;
+      font-family: 'Press Start 2P', cursive;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Шапка */
+    .messenger-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      background-color: #161b22;
+      border-bottom: 2px solid #30363d;
+      position: relative;
+      z-index: 10;
+    }
+
+    .messenger-name {
+      font-size: 18px;
+      color: #fff;
+      text-shadow: 2px 2px 0 #000;
+    }
+
+    .messenger-icon {
+      font-size: 24px;
+      color: #f85149;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .username-display {
+      font-size: 14px;
+      color: #58a6ff;
+    }
+
+    /* Кнопка меню для мобильных */
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: #c9d1d9;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 5px;
+    }
+
+    /* Основной контент */
+    .chat-container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* Список контактов */
+    .contacts-panel {
+      width: 250px;
+      background-color: #0d1117;
+      border-right: 2px solid #30363d;
+      overflow-y: auto;
+      padding: 10px;
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .contacts-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .contacts-title {
+      font-size: 16px;
+      color: #f85149;
+      text-shadow: 2px 2px 0 #000;
+      padding-bottom: 5px;
+    }
+
+    .search-container {
+      position: relative;
+      margin-bottom: 10px;
+    }
+
+    .search-input {
+      background-color: #0d1117;
+      color: #c9d1d9;
+      border: 2px solid #30363d;
+      padding: 6px 6px 6px 30px;
+      width: 100%;
+      font-size: 12px;
+      font-family: 'Press Start 2P', cursive;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #8b949e;
+    }
+
+    .contact-list {
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .contact {
+      padding: 10px;
+      margin-bottom: 8px;
+      background-color: #161b22;
+      border: 2px solid #30363d;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 12px;
+    }
+
+    .contact:hover {
+      background-color: #1f6feb;
+      color: white;
+    }
+
+    .contact.active {
+      background-color: #238636;
+      color: white;
+    }
+
+    /* Область чата */
+    .chat-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-header {
+      padding: 15px;
+      background-color: #161b22;
+      border-bottom: 2px solid #30363d;
+      font-size: 16px;
+      color: #58a6ff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .back-button {
+      display: none;
+      background: none;
+      border: none;
+      color: #c9d1d9;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 0 10px;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px;
+      background-color: #0d1117;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .message {
+      margin-bottom: 15px;
+      max-width: 85%;
+      word-wrap: break-word;
+    }
+
+    .message-sender {
+      font-size: 10px;
+      color: #58a6ff;
+      margin-bottom: 5px;
+    }
+
+    .message-content {
+      background-color: #161b22;
+      border: 2px solid #30363d;
+      padding: 8px 12px;
+      display: inline-block;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .message-time {
+      font-size: 8px;
+      color: #8b949e;
+      margin-top: 3px;
+      text-align: right;
+    }
+
+    .message-outgoing {
+      margin-left: auto;
+    }
+
+    .message-outgoing .message-content {
+      background-color: #238636;
+      color: white;
+    }
+
+    .system-message .message-content {
+      background: none;
+      border: none;
+      color: #8b949e;
+      text-align: center;
+      font-size: 10px;
+      width: 100%;
+    }
+
+    /* Форма отправки */
+    .message-form {
+      display: flex;
+      padding: 10px;
+      background-color: #161b22;
+      border-top: 2px solid #30363d;
+    }
+
+    .message-input {
+      flex: 1;
+      background-color: #0d1117;
+      color: #c9d1d9;
+      border: 2px solid #30363d;
+      padding: 8px;
+      font-size: 12px;
+      border-radius: 0;
+      outline: none;
+      font-family: 'Press Start 2P', cursive;
+      height: 40px;
+    }
+
+    .send-button {
+      background-color: #238636;
+      color: white;
+      border: 2px solid #30363d;
+      padding: 0 15px;
+      margin-left: 8px;
+      cursor: pointer;
+      font-family: 'Press Start 2P', cursive;
+      transition: all 0.2s;
+      font-size: 10px;
+      white-space: nowrap;
+    }
+
+    .send-button:hover {
+      background-color: #2ea043;
+    }
+
+    /* Статус подключения */
+    .connection-status {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      padding: 5px 10px;
+      background-color: #161b22;
+      border: 2px solid #30363d;
+      font-size: 8px;
+      z-index: 100;
+    }
+
+    .status-connected {
+      color: #3fb950;
+    }
+
+    .status-disconnected {
+      color: #f85149;
+    }
+
+    /* Адаптация под мобильные */
+    @media (max-width: 768px) {
+      .menu-toggle {
+        display: block;
+      }
+      
+      .contacts-panel {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        z-index: 20;
+        transform: translateX(-100%);
+      }
+      
+      .contacts-panel.active {
+        transform: translateX(0);
+      }
+      
+      .back-button {
+        display: block;
+      }
+      
+      .contact {
+        padding: 8px;
+        font-size: 10px;
+      }
+      
+      .message {
+        max-width: 90%;
+      }
+      
+      .message-content {
+        font-size: 10px;
+        padding: 6px 10px;
+      }
+      
+      .chat-header {
+        padding: 10px 15px;
+        font-size: 14px;
+      }
+      
+      .search-input {
+        font-size: 10px;
+        padding-left: 25px;
+      }
+      
+      .search-icon {
+        font-size: 12px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .messenger-name {
+        font-size: 14px;
+      }
+      
+      .username-display {
+        font-size: 10px;
+      }
+      
+      .message-input {
+        padding: 6px;
+        font-size: 10px;
+      }
+      
+      .send-button {
+        padding: 0 10px;
+        font-size: 9px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="messenger-header">
+    <div>
+      <button class="menu-toggle" id="menu-toggle">☰</button>
+      <span class="messenger-name">PixelGit</span>
+      <span class="messenger-icon">❤️‍🔥</span>
+    </div>
+    <div class="user-info">
+      <span class="username-display" id="username-display">User123</span>
+      <button id="logout-button" title="Logout">🚪</button>
+    </div>
+  </div>
+
+  <div class="chat-container">
+    <div class="contacts-panel" id="contacts-panel">
+      <div class="contacts-header">
+        <div class="contacts-title">ONLINE</div>
+      </div>
+      
+      <div class="search-container">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" id="user-search" placeholder="Search users...">
+      </div>
+      
+      <div class="contact-list" id="contact-list">
+        <!-- Контакты будут добавляться сюда -->
+      </div>
+    </div>
+
+    <div class="chat-area">
+      <div class="chat-header">
+        <button class="back-button" id="back-button">←</button>
+        <div>Chat with <span id="current-contact">PixelMaster</span></div>
+      </div>
+      
+      <div class="chat-messages" id="chat-messages">
+        <!-- Сообщения будут добавляться здесь -->
+      </div>
+      
+      <div class="message-form">
+        <input type="text" class="message-input" id="message-input" placeholder="Type message...">
+        <button class="send-button" id="send-button">SEND</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="connection-status status-connected" id="connection-status">
+    CONNECTED
+  </div>
+
+  <script>
+    // Элементы интерфейса
+    const chatMessages = document.getElementById('chat-messages');
+    const messageInput = document.getElementById('message-input');
+    const sendButton = document.getElementById('send-button');
+    const connectionStatus = document.getElementById('connection-status');
+    const usernameDisplay = document.getElementById('username-display');
+    const menuToggle = document.getElementById('menu-toggle');
+    const contactsPanel = document.getElementById('contacts-panel');
+    const backButton = document.getElementById('back-button');
+    const logoutButton = document.getElementById('logout-button');
+    const userSearch = document.getElementById('user-search');
+    const contactList = document.getElementById('contact-list');
+    
+    // Параметры URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const username = urlParams.get('username') || localStorage.getItem('username') || 'PixelUser';
+    usernameDisplay.textContent = username;
+    
+    // Шифрование (AES)
+    const CryptoJS = window.CryptoJS;
+    
+    function encryptMessage(message, secret) {
+      return CryptoJS.AES.encrypt(message, secret).toString();
+    }
+    
+    function decryptMessage(ciphertext, secret) {
+      try {
+        const bytes = CryptoJS.AES.decrypt(ciphertext, secret);
+        return bytes.toString(CryptoJS.enc.Utf8);
+      } catch (e) {
+        console.error('Decryption error:', e);
+        return '🔒 Unable to decrypt message';
+      }
+    }
+    
+    // Получение секретного ключа
+    function getSecretKey() {
+      const token = localStorage.getItem('token');
+      return token ? token.slice(0, 16) : 'defaultSecretKey!';
+    }
+    
+    // Подключение к WebSocket серверу
+    const serverUrl = 'ws://localhost:8765';
+    const socket = new WebSocket(serverUrl);
+    
+    // Переменные состояния
+    let currentChat = null;
+    let onlineUsers = [];
+    
+    // Функции для мобильной адаптации
+    menuToggle.addEventListener('click', () => {
+      contactsPanel.classList.toggle('active');
+    });
+
+    backButton.addEventListener('click', () => {
+      contactsPanel.classList.add('active');
+    });
+
+    // Поиск пользователей
+    userSearch.addEventListener('input', () => {
+      const searchTerm = userSearch.value.toLowerCase();
+      renderContacts(searchTerm);
+    });
+    
+    // Выход из системы
+    logoutButton.addEventListener('click', () => {
+      localStorage.removeItem('username');
+      localStorage.removeItem('token');
+      window.location.href = 'index.html';
+    });
+    
+    // Обработчики WebSocket
+    socket.onopen = function() {
+      updateConnectionStatus(true);
+      sendSystemMessage('Connected to server');
+      
+      // Регистрация пользователя
+      socket.send(JSON.stringify({
+        type: 'register',
+        username: username,
+        token: localStorage.getItem('token')
+      }));
+    };
+
+    socket.onmessage = function(event) {
+      const message = JSON.parse(event.data);
+      
+      if (message.type === 'userlist') {
+        // Обновление списка пользователей
+        onlineUsers = message.users;
+        renderContacts();
+      } else if (message.type === 'message') {
+        // Новое сообщение
+        const decrypted = decryptMessage(message.content, getSecretKey());
+        addMessage(
+          message.sender, 
+          decrypted, 
+          message.sender === username,
+          message.timestamp
+        );
+      } else if (message.type === 'history') {
+        // Загрузка истории сообщений
+        message.data.forEach(msg => {
+          const decrypted = decryptMessage(msg.content, getSecretKey());
+          addMessage(
+            msg.sender, 
+            decrypted, 
+            msg.sender === username,
+            msg.timestamp
+          );
+        });
+      } else if (message.type === 'error') {
+        sendSystemMessage(`Error: ${message.content}`);
+      }
+    };
+
+    socket.onclose = function() {
+      updateConnectionStatus(false);
+      sendSystemMessage('Disconnected from server. Reconnecting...');
+      
+      // Попытка переподключения
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
+    };
+
+    socket.onerror = function(error) {
+      console.error('WebSocket error:', error);
+      sendSystemMessage('Connection error');
+    };
+
+    // Отправка сообщения
+    function sendMessage() {
+      const content = messageInput.value.trim();
+      if (content && currentChat) {
+        // Шифрование сообщения
+        const encrypted = encryptMessage(content, getSecretKey());
+        
+        const message = {
+          type: 'message',
+          content: encrypted,
+          sender: username,
+          recipient: currentChat,
+          timestamp: new Date().toISOString()
+        };
+        
+        socket.send(JSON.stringify(message));
+        addMessage(username, content, true);
+        messageInput.value = '';
+      }
+    }
+
+    // Добавление сообщения в чат
+    function addMessage(sender, content, isOutgoing, timestamp = null) {
+      const messageElement = document.createElement('div');
+      messageElement.className = `message ${isOutgoing ? 'message-outgoing' : ''}`;
+      
+      const time = timestamp ? new Date(timestamp) : new Date();
+      const timeString = `${time.getHours()}:${time.getMinutes().toString().padStart(2, '0')}`;
+      
+      messageElement.innerHTML = `
+        <div class="message-sender">${sender === username ? 'You' : sender}</div>
+        <div class="message-content">${content}</div>
+        <div class="message-time">${timeString}</div>
+      `;
+      
+      chatMessages.appendChild(messageElement);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Системные сообщения
+    function sendSystemMessage(content) {
+      const messageElement = document.createElement('div');
+      messageElement.className = 'message system-message';
+      messageElement.innerHTML = `
+        <div class="message-content">${content}</div>
+      `;
+      chatMessages.appendChild(messageElement);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Обновление статуса подключения
+    function updateConnectionStatus(connected) {
+      connectionStatus.textContent = connected ? 'CONNECTED' : 'DISCONNECTED';
+      connectionStatus.className = `connection-status ${connected ? 'status-connected' : 'status-disconnected'}`;
+    }
+
+    // Отображение списка контактов
+    function renderContacts(searchTerm = '') {
+      contactList.innerHTML = '';
+      
+      const filteredUsers = onlineUsers.filter(user => 
+        user !== username && 
+        user.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      
+      if (filteredUsers.length === 0) {
+        contactList.innerHTML = '<div class="contact">No users found</div>';
+        return;
+      }
+      
+      filteredUsers.forEach(user => {
+        const contact = document.createElement('div');
+        contact.className = `contact ${user === currentChat ? 'active' : ''}`;
+        contact.textContent = user;
+        
+        contact.addEventListener('click', function() {
+          // Обновляем текущий чат
+          currentChat = user;
+          document.getElementById('current-contact').textContent = user;
+          
+          // Обновляем активный контакт
+          document.querySelectorAll('.contact').forEach(c => c.classList.remove('active'));
+          this.classList.add('active');
+          
+          // Очищаем чат
+          chatMessages.innerHTML = '';
+          
+          // Запрашиваем историю сообщений
+          socket.send(JSON.stringify({
+            type: 'gethistory',
+            target: user
+          }));
+          
+          // Закрываем меню на мобильных
+          if (window.innerWidth <= 768) {
+            contactsPanel.classList.remove('active');
+          }
+        });
+        
+        contactList.appendChild(contact);
+      });
+    }
+
+    // Обработчики событий
+    sendButton.addEventListener('click', sendMessage);
+    
+    messageInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    });
+
+    // Инициализация
+    sendSystemMessage('Welcome to PixelGit Messenger!');
+  </script>
+  
+  <!-- Библиотека для шифрования -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+</body>
+</html>
