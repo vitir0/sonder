@@ -8,7 +8,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
-    /* Ваши существующие стили без изменений */
     body {
       background-color: #0d1117;
       color: #c9d1d9;
@@ -209,6 +208,25 @@
       z-index: 1000;
       display: none;
     }
+
+    /* Медиа-запросы для мобильных устройств */
+    @media (max-width: 768px) {
+      .card {
+        width: 90%;
+        padding: 15px;
+      }
+      .pixel-title {
+        font-size: 36px;
+      }
+      .pixel-input, .pixel-button, .register-button {
+        width: 100%;
+        font-size: 14px;
+      }
+      .exit-button {
+        padding: 3px 6px;
+        font-size: 10px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -262,6 +280,28 @@
     const loginBtn = document.getElementById('login-button');
     const registerSubmitBtn = document.getElementById('register-submit');
     const serverOffline = document.getElementById('server-offline');
+
+    // Проверка авторизации при загрузке
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = localStorage.getItem('authToken');
+      const username = localStorage.getItem('username');
+      
+      if (token && username) {
+        // Показываем приветствие
+        const welcome = document.createElement('div');
+        welcome.className = 'welcome-message';
+        welcome.textContent = `Welcome back, ${username}!`;
+        loginForm.insertBefore(welcome, loginForm.firstChild);
+        
+        document.getElementById('login-success').textContent = 'Redirecting to chat...';
+        document.getElementById('login-success').style.display = 'block';
+        
+        // Перенаправление в чат через 1 секунду
+        setTimeout(() => {
+          window.location.href = 'chat.html';
+        }, 1000);
+      }
+    });
 
     // Проверка доступности сервера
     async function checkServerStatus() {
@@ -404,12 +444,7 @@
             clearRegisterForm();
           }, 3000);
         } else {
-          // Обработка существующего имени пользователя
-          if (data.message === 'Username already exists') {
-            showError('reg-user-error', 'Username already taken');
-          } else {
-            showError('reg-user-error', data.message || 'Registration error');
-          }
+          showError('reg-user-error', data.message || 'Registration error');
         }
       } catch (error) {
         handleNetworkError(error, 'reg-user-error');
