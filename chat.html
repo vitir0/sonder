@@ -7,9 +7,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-  <!-- Добавляем библиотеку для шифрования -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
   <style>
+    /* Базовые стили остаются без изменений */
     body {
       background-color: #0d1117;
       color: #c9d1d9;
@@ -55,9 +55,10 @@
       display: flex;
       flex: 1;
       overflow: hidden;
+      position: relative;
     }
 
-    /* Стили для боковой панели */
+    /* Боковая панель */
     .sidebar {
       width: 300px;
       background-color: #161b22;
@@ -74,7 +75,7 @@
 
     .toggle-sidebar {
       position: fixed;
-      bottom: 20px;
+      top: 70px; /* Подняли выше */
       right: 20px;
       background-color: #238636;
       color: white;
@@ -206,6 +207,7 @@
       padding: 10px;
       display: flex;
       flex-direction: column;
+      padding-bottom: 70px; /* Добавили отступ для поля ввода */
     }
 
     .message {
@@ -242,6 +244,11 @@
       padding: 10px;
       background-color: #161b22;
       border-top: 2px solid #30363d;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
     }
 
     .chat-input {
@@ -266,21 +273,6 @@
       border-radius: 0;
       outline: none;
       font-family: 'Press Start 2P', cursive;
-    }
-
-    .encryption-indicator {
-      position: fixed;
-      bottom: 80px;
-      right: 20px;
-      background-color: #1a7f37;
-      color: white;
-      padding: 5px 10px;
-      border-radius: 10px;
-      font-size: 10px;
-      z-index: 95;
-      display: flex;
-      align-items: center;
-      gap: 5px;
     }
     
     /* Стили для профиля пользователя */
@@ -397,22 +389,90 @@
     /* Для мобильных устройств */
     @media (max-width: 768px) {
       .sidebar {
-        position: absolute;
+        position: fixed;
         height: 100%;
+        width: 100%;
+        z-index: 99;
       }
       
       .toggle-sidebar {
-        bottom: 70px;
+        top: 70px; /* Подняли выше */
         right: 15px;
         width: 45px;
         height: 45px;
         font-size: 20px;
       }
       
-      .encryption-indicator {
-        bottom: 125px;
-        right: 15px;
+      .chat-container {
+        width: 100%;
+      }
+      
+      .message {
+        max-width: 90%;
+      }
+      
+      .user-profile {
+        padding: 8px;
+      }
+      
+      .avatar {
+        width: 35px;
+        height: 35px;
+        font-size: 14px;
+      }
+      
+      .username {
+        font-size: 10px;
+      }
+      
+      .settings-content {
+        width: 95%;
+        padding: 15px;
+      }
+      
+      .settings-section {
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .messenger-header {
+        padding: 8px;
+      }
+      
+      .messenger-name {
+        font-size: 16px;
+      }
+      
+      .user-info {
+        font-size: 10px;
+      }
+      
+      .chat-name {
+        font-size: 10px;
+      }
+      
+      .last-message {
         font-size: 8px;
+      }
+      
+      .chat-time {
+        font-size: 7px;
+      }
+      
+      .input-area {
+        padding: 8px;
+      }
+      
+      .chat-input {
+        font-size: 12px;
+        padding: 6px;
+      }
+      
+      .chat-button {
+        padding: 6px 12px;
+        font-size: 12px;
       }
     }
   </style>
@@ -432,9 +492,6 @@
   </div>
 
   <button class="toggle-sidebar" id="toggle-sidebar">☰</button>
-  <div class="encryption-indicator" id="encryption-indicator">
-    <span>🔒</span> End-to-End Encrypted
-  </div>
   
   <div class="main-container">
     <!-- Боковая панель с чатами -->
@@ -444,7 +501,6 @@
       </div>
       
       <div class="chats-container" id="chats-list">
-        <!-- Чаты будут загружены динамически -->
         <div class="no-chats">No chats yet. Start a new conversation!</div>
       </div>
       
@@ -780,10 +836,6 @@
           <div class="message-sender">System</div>
           <div class="message-text">Chat with ${withUser}</div>
         </div>
-        <div class="message other">
-          <div class="message-sender">System</div>
-          <div class="message-text">Messages are end-to-end encrypted 🔒</div>
-        </div>
       `;
     }
     
@@ -861,14 +913,22 @@
         }
         
         const encryptedMessages = await response.json();
-        const decryptedMessages = encryptedMessages.map(msg => {
-          return {
-            ...msg,
-            text: decryptMessage(msg.text, chatEncryptionKeys[chatId])
-          };
-        });
         
-        renderMessages(decryptedMessages);
+        // Проверяем, есть ли сообщения
+        if (encryptedMessages && encryptedMessages.messages && encryptedMessages.messages.length > 0) {
+          const decryptedMessages = encryptedMessages.messages.map(msg => {
+            return {
+              ...msg,
+              text: decryptMessage(msg.text, chatEncryptionKeys[chatId])
+            };
+          });
+          
+          renderMessages(decryptedMessages);
+        } else {
+          // Если сообщений нет, показываем соответствующее сообщение
+          renderMessages([]);
+          showSystemMessage('No messages yet. Start the conversation!');
+        }
       } catch (error) {
         console.error('Error loading messages:', error);
         showSystemMessage('Failed to load messages. Please try again later.');
@@ -883,9 +943,11 @@
     
     // Отображение сообщений
     function renderMessages(messages) {
-      // Очищаем только если есть новые сообщения
-      if (messages.length > 0) {
-        messagesContainer.innerHTML = '';
+      messagesContainer.innerHTML = '';
+      
+      if (messages.length === 0) {
+        showSystemMessage('No messages yet. Start the conversation!');
+        return;
       }
       
       messages.forEach(message => {
