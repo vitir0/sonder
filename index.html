@@ -8,7 +8,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
-    /* Общие стили */
     body {
       background-color: #0d1117;
       color: #c9d1d9;
@@ -21,7 +20,6 @@
       margin: 0;
     }
 
-    /* Название мессенджера вверху */
     .messenger-header {
       display: flex;
       justify-content: space-between;
@@ -47,18 +45,14 @@
       color: #f85149;
     }
 
-    /* Карточка (окошко) */
     .card {
       background-color: #161b22;
       padding: 20px;
       border: 2px solid #30363d;
       border-radius: 0;
-      position: relative; /* Для позиционирования кнопки выхода */
-      width: 320px;
-      max-width: 90%;
+      position: relative;
     }
 
-    /* Пиксельный заголовок (Hello) */
     .pixel-title {
       font-size: 48px;
       color: #f85149;
@@ -67,23 +61,20 @@
       text-align: center;
     }
 
-    /* Пиксельный заголовок (Register) */
     .pixel-title-register {
-      font-size: 32px; /* Уменьшаем размер */
+      font-size: 32px;
       color: #f85149;
       text-shadow: 3px 3px 0 #000;
       margin-bottom: 20px;
       text-align: center;
     }
 
-    /* Форма логина */
     .login-form {
       display: flex;
       flex-direction: column;
       align-items: center;
     }
 
-    /* Пиксельное поле ввода */
     .pixel-input {
       background-color: #0d1117;
       color: #c9d1d9;
@@ -91,16 +82,15 @@
       padding: 8px;
       font-size: 16px;
       margin-bottom: 10px;
-      width: 100%;
+      width: 200px;
       border-radius: 0;
       outline: none;
       font-family: 'Press Start 2P', cursive;
-      transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* Плавный переход для box-shadow */
+      transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     }
 
-    /* Пиксельная кнопка */
     .pixel-button {
-          background-color: #238636;
+      background-color: #238636;
       color: #fff;
       border: 2px solid #30363d;
       padding: 8px 16px;
@@ -109,18 +99,15 @@
       border-radius: 0;
       outline: none;
       font-family: 'Press Start 2P', cursive;
-      transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* Плавные переходы */
-      width: 100%;
+      transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     }
 
-    /* Фокус для полей ввода и кнопки */
     .pixel-input:focus,
     .pixel-button:focus {
       border-color: #1f6feb;
-      box-shadow: 0 0 5px #1f6feb; /* Свечение */
+      box-shadow: 0 0 5px #1f6feb;
     }
 
-    /* Кнопка "Register" */
     .register-button {
       background-color: #30363d;
       color: #c9d1d9;
@@ -132,8 +119,7 @@
       outline: none;
       font-family: 'Press Start 2P', cursive;
       margin-top: 10px;
-      transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* Плавные переходы */
-      width: 100%;
+      transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     }
 
     .register-button:hover {
@@ -141,7 +127,6 @@
       color: #fff;
     }
 
-    /* Окно регистрации (скрыто по умолчанию) */
     .register-modal {
       display: none;
       position: fixed;
@@ -159,27 +144,16 @@
       animation: fadeIn 0.3s ease-in-out;
     }
 
-    /* Анимация появления окна */
     @keyframes fadeIn {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
-    /* Добавим свечение при фокусе на input */
-    .pixel-input:focus {
-      box-shadow: 0 0 5px #1f6feb;
-    }
-
-    /* Кнопка выхода */
     .exit-button {
-      position: absolute; /* Абсолютное позиционирование */
+      position: absolute;
       top: 10px;
       right: 10px;
-      background-color: #f85149; /* Красный цвет */
+      background-color: #f85149;
       color: #fff;
       border: none;
       padding: 4px 8px;
@@ -188,56 +162,57 @@
       border-radius: 0;
       outline: none;
       font-family: 'Press Start 2P', cursive;
-      transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* Плавные переходы */
+      transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     }
 
     .exit-button:hover {
-          background-color: #d00000; /* Темнее при наведении */
-      box-shadow: 0 0 5px #d00000; /* Свечение при наведении */
+      background-color: #d00000;
+      box-shadow: 0 0 5px #d00000;
     }
-
-    /* Сообщения об ошибке */
+    
     .error-message {
       color: #f85149;
       font-size: 10px;
       margin-top: -5px;
       margin-bottom: 10px;
       text-align: center;
+      max-width: 200px;
+      line-height: 1.4;
+    }
+
+    .success-message {
+      color: #3fb950;
+      font-size: 12px;
+      margin-bottom: 10px;
+      text-align: center;
       display: none;
     }
 
-    /* Адаптация для мобильных */
-    @media (max-width: 768px) {
-      .pixel-title {
-        font-size: 36px;
-      }
-      
-      .pixel-title-register {
-        font-size: 24px;
-      }
-      
-      .card {
-        width: 90%;
-      }
-      
-      .pixel-input, .pixel-button, .register-button {
-        font-size: 14px;
-        padding: 10px;
-      }
+    .welcome-message {
+      color: #58a6ff;
+      font-size: 14px;
+      margin-bottom: 10px;
+      text-align: center;
     }
-    
-    @media (max-width: 480px) {
-      .pixel-title {
-        font-size: 28px;
-      }
-      
-      .messenger-name {
-        font-size: 16px;
-      }
+
+    .server-offline {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #f85149;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-size: 12px;
+      z-index: 1000;
+      display: none;
     }
   </style>
 </head>
 <body>
+  <div class="server-offline" id="server-offline">Server is offline. Trying to reconnect...</div>
+  
   <div class="messenger-header">
     <span class="messenger-name">PixelGit</span>
     <span class="messenger-icon">❤️‍🔥</span>
@@ -246,188 +221,238 @@
   <div class="card">
     <button class="exit-button" id="main-exit-button">Exit &rarr;</button>
     <h1 class="pixel-title">Hello</h1>
-    <div class="login-form">
-      <input type="text" class="pixel-input" id="login-username" placeholder="Username" required>
-      <div class="error-message" id="username-error"></div>
-      
-      <input type="password" class="pixel-input" id="login-password" placeholder="Password" required>
-      <div class="error-message" id="password-error"></div>
-      
-      <button class="pixel-button" id="login-button">Login</button>
-      <button class="register-button" id="register-button">Register</button>
+    <div class="login-form" id="login-form">
+      <input type="text" class="pixel-input" placeholder="Username" id="login-username" required>
+      <div id="login-user-error" class="error-message"></div>
+      <input type="password" class="pixel-input" placeholder="Password" id="login-password" required>
+      <div id="login-pass-error" class="error-message"></div>
+      <div id="login-success" class="success-message"></div>
+      <button type="submit" class="pixel-button" id="login-button">Login</button>
+      <button type="button" class="register-button" id="register-button">Register</button>
     </div>
   </div>
 
-  <!-- Окно регистрации -->
   <div class="register-modal" id="register-modal">
     <div class="card">
       <button class="exit-button" id="register-exit-button">Exit &rarr;</button>
       <h1 class="pixel-title-register">Register</h1>
-      <div class="login-form">
-        <input type="text" class="pixel-input" id="reg-username" placeholder="Username" required>
-        <div class="error-message" id="reg-username-error"></div>
-        
-        <input type="password" class="pixel-input" id="reg-password" placeholder="Password" required>
-        <div class="error-message" id="reg-password-error"></div>
-        
-        <input type="password" class="pixel-input" id="reg-confirm" placeholder="Confirm Password" required>
-        <div class="error-message" id="reg-confirm-error"></div>
-        
-        <button class="pixel-button" id="complete-register">Register</button>
+      <div class="login-form" id="register-form">
+        <input type="text" class="pixel-input" placeholder="Username" id="reg-username" required>
+        <div id="reg-user-error" class="error-message"></div>
+        <input type="password" class="pixel-input" placeholder="Password" id="reg-password" required>
+        <div id="reg-pass-error" class="error-message"></div>
+        <input type="password" class="pixel-input" placeholder="Confirm Password" id="reg-confirm" required>
+        <div id="reg-confirm-error" class="error-message"></div>
+        <div id="reg-success" class="success-message"></div>
+        <button type="submit" class="pixel-button" id="register-submit">Register</button>
       </div>
     </div>
   </div>
   
   <script>
-    // Элементы DOM
-    const registerButton = document.getElementById('register-button');
+    const API_BASE_URL = 'http://localhost:5000';
+    
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
     const registerModal = document.getElementById('register-modal');
+    const registerButton = document.getElementById('register-button');
     const registerExitButton = document.getElementById('register-exit-button');
     const mainExitButton = document.getElementById('main-exit-button');
-    const loginButton = document.getElementById('login-button');
-    const completeRegister = document.getElementById('complete-register');
-    
-    // Показать окно регистрации
-    registerButton.addEventListener('click', () => {
+    const loginBtn = document.getElementById('login-button');
+    const registerSubmitBtn = document.getElementById('register-submit');
+    const serverOffline = document.getElementById('server-offline');
+
+    // Проверка доступности сервера
+    async function checkServerStatus() {
+      try {
+        const response = await fetch(API_BASE_URL, { method: 'HEAD' });
+        serverOffline.style.display = 'none';
+        return response.ok;
+      } catch (error) {
+        serverOffline.style.display = 'block';
+        return false;
+      }
+    }
+
+    // Проверять статус сервера каждые 10 секунд
+    setInterval(checkServerStatus, 10000);
+    checkServerStatus(); // Проверить при загрузке
+
+    registerButton.addEventListener('click', async () => {
+      clearMessages();
+      
+      // Проверить доступность сервера перед открытием формы
+      const serverOnline = await checkServerStatus();
+      if (!serverOnline) {
+        showError('login-user-error', 'Server is offline. Try again later.');
+        return;
+      }
+      
       registerModal.style.display = 'flex';
     });
 
-    // Закрыть окно регистрации
     registerExitButton.addEventListener('click', () => {
       registerModal.style.display = 'none';
-      clearRegistrationErrors();
+      clearRegisterForm();
     });
 
-    // Выход из приложения
     mainExitButton.addEventListener('click', () => {
-      alert('Выход из приложения');
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('username');
+      alert('Вы вышли из системы');
+      window.location.reload();
     });
 
-    // Очистка ошибок регистрации
-    function clearRegistrationErrors() {
-      document.getElementById('reg-username-error').style.display = 'none';
-      document.getElementById('reg-password-error').style.display = 'none';
-      document.getElementById('reg-confirm-error').style.display = 'none';
-    }
-    
-    // Очистка ошибок входа
-    function clearLoginErrors() {
-      document.getElementById('username-error').style.display = 'none';
-      document.getElementById('password-error').style.display = 'none';
-    }
+    window.addEventListener('click', (e) => {
+      if (e.target === registerModal) {
+        registerModal.style.display = 'none';
+        clearRegisterForm();
+      }
+    });
 
-    // Валидация регистрации
-    completeRegister.addEventListener('click', async () => {
-      const username = document.getElementById('reg-username').value.trim();
+    loginBtn.addEventListener('click', async () => {
+      clearMessages();
+      const username = document.getElementById('login-username').value;
+      const password = document.getElementById('login-password').value;
+      
+      if (!validateField(username, 'login-user-error', 'Username обязателен')) return;
+      if (!validateField(password, 'login-pass-error', 'Password обязателен')) return;
+      
+      // Проверить доступность сервера
+      const serverOnline = await checkServerStatus();
+      if (!serverOnline) {
+        showError('login-pass-error', 'Server is offline. Try again later.');
+        return;
+      }
+      
+      try {
+        const response = await fetch(`${API_BASE_URL}/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          localStorage.setItem('authToken', data.token);
+          localStorage.setItem('username', username);
+          
+          // Показываем приветствие
+          const welcome = document.createElement('div');
+          welcome.className = 'welcome-message';
+          welcome.textContent = `Welcome, ${username}!`;
+          loginForm.insertBefore(welcome, loginForm.firstChild);
+          
+          document.getElementById('login-success').textContent = 'Redirecting to chat...';
+          document.getElementById('login-success').style.display = 'block';
+          
+          // Перенаправление в чат через 2 секунды
+          setTimeout(() => {
+            window.location.href = 'chat.html';
+          }, 2000);
+        } else {
+          showError('login-pass-error', data.message || 'Login error');
+        }
+      } catch (error) {
+        handleNetworkError(error, 'login-pass-error');
+      }
+    });
+
+    registerSubmitBtn.addEventListener('click', async () => {
+      clearMessages();
+      const username = document.getElementById('reg-username').value;
       const password = document.getElementById('reg-password').value;
       const confirm = document.getElementById('reg-confirm').value;
       
-      clearRegistrationErrors();
-      
       let valid = true;
-      
-      if (username.length < 3) {
-        document.getElementById('reg-username-error').textContent = 'Username must be at least 3 characters';
-        document.getElementById('reg-username-error').style.display = 'block';
-        valid = false;
-      }
-      
-      if (password.length < 6) {
-        document.getElementById('reg-password-error').textContent = 'Password must be at least 6 characters';
-        document.getElementById('reg-password-error').style.display = 'block';
-        valid = false;
-      }
-      
-      if (password !== confirm) {
-        document.getElementById('reg-confirm-error').textContent = 'Passwords do not match';
-        document.getElementById('reg-confirm-error').style.display = 'block';
-        valid = false;
-      }
+      if (!validateField(username, 'reg-user-error', 'Username required')) valid = false;
+      if (!validateField(password, 'reg-pass-error', 'Password required')) valid = false;
+      if (!validateField(confirm, 'reg-confirm-error', 'Confirm password')) valid = false;
       
       if (!valid) return;
       
-      try {
-        // Отправка данных на сервер
-        
-        const response = await fetch('/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            username: username,
-            password: password
-          })
-        });
-        
-        const result = await response.json();
-        
-        if (response.ok) {
-          alert('Registration successful! Please login.');
-          registerModal.style.display = 'none';
-          clearRegistrationErrors();
-        } else {
-          document.getElementById('reg-username-error').textContent = result.error || 'Registration failed';
-          document.getElementById('reg-username-error').style.display = 'block';
-        }
-      } catch (error) {
-        console.error('Registration error:', error);
-        document.getElementById('reg-username-error').textContent = 'Server connection error';
-        document.getElementById('reg-username-error').style.display = 'block';
-      }
-    });
-    
-    // Обработка входа
-    loginButton.addEventListener('click', async () => {
-      const username = document.getElementById('login-username').value.trim();
-      const password = document.getElementById('login-password').value;
-      
-      clearLoginErrors();
-      
-      if (!username) {
-        document.getElementById('username-error').textContent = 'Username is required';
-        document.getElementById('username-error').style.display = 'block';
+      if (password !== confirm) {
+        showError('reg-confirm-error', 'Passwords do not match');
         return;
       }
       
-      if (!password) {
-        document.getElementById('password-error').textContent = 'Password is required';
-        document.getElementById('password-error').style.display = 'block';
+      // Проверить доступность сервера
+      const serverOnline = await checkServerStatus();
+      if (!serverOnline) {
+        showError('reg-user-error', 'Server is offline. Try again later.');
         return;
       }
       
       try {
-        // Отправка данных на сервер
-        const API_BASE_URL = 'http://192.168.3.52:5000
-        const response = await fetch(`${API_BASE_URL}/login`, {
+        const response = await fetch(`${API_BASE_URL}/register`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            username: username,
-            password: password
-          })
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
         });
         
-        const result = await response.json();
+        const data = await response.json();
         
         if (response.ok) {
-          // Сохраняем данные пользователя
-          localStorage.setItem('username', username);
+          document.getElementById('reg-success').textContent = 'Registration successful! Please login.';
+          document.getElementById('reg-success').style.display = 'block';
           
-          // Переходим в чат
-          window.location.href = `chat.html?username=${encodeURIComponent(username)}`;
+          // Автоматическое закрытие формы через 3 секунды
+          setTimeout(() => {
+            registerModal.style.display = 'none';
+            clearRegisterForm();
+          }, 3000);
         } else {
-          document.getElementById('password-error').textContent = result.error || 'Login failed';
-          document.getElementById('password-error').style.display = 'block';
+          showError('reg-user-error', data.message || 'Registration error');
         }
       } catch (error) {
-        console.error('Login error:', error);
-        document.getElementById('password-error').textContent = 'Server connection error';
-        document.getElementById('password-error').style.display = 'block';
+        handleNetworkError(error, 'reg-user-error');
       }
     });
+
+    function handleNetworkError(error, errorElementId) {
+      if (error.name === 'TypeError') {
+        if (error.message.includes('Failed to fetch')) {
+          showError(errorElementId, 'Server is offline or unreachable');
+          serverOffline.style.display = 'block';
+        } else {
+          showError(errorElementId, `Network error: ${error.message}`);
+        }
+      } else {
+        showError(errorElementId, `Error: ${error.message}`);
+      }
+      console.error('Error:', error);
+    }
+
+    function validateField(value, errorId, message) {
+      if (!value.trim()) {
+        showError(errorId, message);
+        return false;
+      }
+      return true;
+    }
+
+    function showError(elementId, message) {
+      const errorElement = document.getElementById(elementId);
+      errorElement.textContent = message;
+    }
+
+    function clearMessages() {
+      const welcome = document.querySelector('.welcome-message');
+      if (welcome) welcome.remove();
+      
+      document.querySelectorAll('.error-message, .success-message').forEach(el => {
+        el.textContent = '';
+        el.style.display = 'none';
+      });
+    }
+
+    function clearRegisterForm() {
+      document.getElementById('reg-username').value = '';
+      document.getElementById('reg-password').value = '';
+      document.getElementById('reg-confirm').value = '';
+      clearMessages();
+    }
   </script>
 </body>
 </html>
