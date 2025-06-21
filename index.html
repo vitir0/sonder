@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
+    /* Ваши существующие стили без изменений */
     body {
       background-color: #0d1117;
       color: #c9d1d9;
@@ -250,7 +251,7 @@
   </div>
   
   <script>
-    const API_BASE_URL = 'https://pixelgit-api-vitir.onrender.com/';
+    const API_BASE_URL = 'https://pixelgit-api-vitir.onrender.com';
     
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
@@ -403,7 +404,12 @@
             clearRegisterForm();
           }, 3000);
         } else {
-          showError('reg-user-error', data.message || 'Registration error');
+          // Обработка существующего имени пользователя
+          if (data.message === 'Username already exists') {
+            showError('reg-user-error', 'Username already taken');
+          } else {
+            showError('reg-user-error', data.message || 'Registration error');
+          }
         }
       } catch (error) {
         handleNetworkError(error, 'reg-user-error');
