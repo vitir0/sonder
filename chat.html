@@ -9,7 +9,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
   <style>
-    /* Базовые стили остаются без изменений */
     body {
       background-color: #0d1117;
       color: #c9d1d9;
@@ -55,10 +54,9 @@
       display: flex;
       flex: 1;
       overflow: hidden;
-      position: relative;
     }
 
-    /* Боковая панель */
+    /* Стили для боковой панели */
     .sidebar {
       width: 300px;
       background-color: #161b22;
@@ -75,7 +73,7 @@
 
     .toggle-sidebar {
       position: fixed;
-      top: 70px; /* Подняли выше */
+      bottom: 20px;
       right: 20px;
       background-color: #238636;
       color: white;
@@ -168,7 +166,6 @@
       border-top: 2px solid #30363d;
       max-height: 200px;
       overflow-y: auto;
-      display: none;
     }
 
     .user-result {
@@ -207,7 +204,7 @@
       padding: 10px;
       display: flex;
       flex-direction: column;
-      padding-bottom: 70px; /* Добавили отступ для поля ввода */
+      min-height: 0; /* Ключевое исправление для отображения сообщений */
     }
 
     .message {
@@ -216,6 +213,7 @@
       border-radius: 4px;
       background-color: #21262d;
       max-width: 80%;
+      word-wrap: break-word;
     }
 
     .message.self {
@@ -244,11 +242,6 @@
       padding: 10px;
       background-color: #161b22;
       border-top: 2px solid #30363d;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 100;
     }
 
     .chat-input {
@@ -274,133 +267,64 @@
       outline: none;
       font-family: 'Press Start 2P', cursive;
     }
-    
-    /* Стили для профиля пользователя */
-    .user-profile {
-      display: flex;
-      align-items: center;
-      padding: 10px;
-      border-top: 2px solid #30363d;
-      background-color: #161b22;
-    }
 
-    .avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: #58a6ff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      margin-right: 10px;
-    }
-
-    .username {
-      flex-grow: 1;
-      font-size: 12px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .settings-btn {
-      background: none;
-      border: none;
-      color: #c9d1d9;
-      font-size: 16px;
-      cursor: pointer;
-      padding: 5px;
-    }
-
-    /* Стили для модального окна настроек */
-    .settings-modal {
-      display: none;
+    .encryption-indicator {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.7);
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-
-    .settings-content {
-      background-color: #161b22;
-      padding: 20px;
-      border: 2px solid #30363d;
-      width: 90%;
-      max-width: 500px;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-
-    .close-settings {
-      float: right;
-      background: #f85149;
-      border: none;
+      bottom: 80px;
+      right: 20px;
+      background-color: #1a7f37;
       color: white;
-      font-size: 20px;
-      cursor: pointer;
-      width: 30px;
-      height: 30px;
-    }
-
-    .settings-section {
-      margin-bottom: 20px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid #30363d;
-    }
-
-    .avatar-upload {
+      padding: 5px 10px;
+      border-radius: 10px;
+      font-size: 10px;
+      z-index: 95;
       display: flex;
       align-items: center;
-      gap: 10px;
-    }
-
-    .avatar-preview {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      background-color: #58a6ff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      font-weight: bold;
-    }
-
-    .danger-zone {
-      border-color: #f85149;
-    }
-
-    .danger-zone button {
-      background-color: #f85149;
-    }
-    
-    .no-chats {
-      text-align: center;
-      padding: 20px;
-      font-size: 12px;
-      color: #8b949e;
+      gap: 5px;
     }
 
     /* Для мобильных устройств */
     @media (max-width: 768px) {
       .sidebar {
-        position: fixed;
+        position: absolute;
         height: 100%;
         width: 100%;
-        z-index: 99;
       }
       
       .toggle-sidebar {
-        top: 70px; /* Подняли выше */
+        bottom: 70px;
         right: 15px;
         width: 45px;
         height: 45px;
         font-size: 20px;
+      }
+      
+      .encryption-indicator {
+        bottom: 125px;
+        right: 15px;
+        font-size: 8px;
+      }
+      
+      .messenger-header {
+        flex-wrap: wrap;
+        padding: 5px;
+      }
+      
+      .messenger-name {
+        font-size: 16px;
+      }
+      
+      .user-info {
+        font-size: 10px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      
+      #current-user {
+        max-width: 100px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
       
       .chat-container {
@@ -411,68 +335,13 @@
         max-width: 90%;
       }
       
-      .user-profile {
-        padding: 8px;
-      }
-      
-      .avatar {
-        width: 35px;
-        height: 35px;
-        font-size: 14px;
-      }
-      
-      .username {
-        font-size: 10px;
-      }
-      
-      .settings-content {
-        width: 95%;
-        padding: 15px;
-      }
-      
-      .settings-section {
-        margin-bottom: 15px;
-        padding-bottom: 15px;
-      }
-    }
-    
-    @media (max-width: 480px) {
-      .messenger-header {
-        padding: 8px;
-      }
-      
-      .messenger-name {
-        font-size: 16px;
-      }
-      
-      .user-info {
-        font-size: 10px;
-      }
-      
-      .chat-name {
-        font-size: 10px;
-      }
-      
-      .last-message {
-        font-size: 8px;
-      }
-      
-      .chat-time {
-        font-size: 7px;
-      }
-      
-      .input-area {
-        padding: 8px;
-      }
-      
       .chat-input {
         font-size: 12px;
-        padding: 6px;
       }
       
       .chat-button {
-        padding: 6px 12px;
         font-size: 12px;
+        padding: 6px 12px;
       }
     }
   </style>
@@ -492,6 +361,9 @@
   </div>
 
   <button class="toggle-sidebar" id="toggle-sidebar">☰</button>
+  <div class="encryption-indicator" id="encryption-indicator">
+    <span>🔒</span> End-to-End Encrypted
+  </div>
   
   <div class="main-container">
     <!-- Боковая панель с чатами -->
@@ -501,18 +373,11 @@
       </div>
       
       <div class="chats-container" id="chats-list">
-        <div class="no-chats">No chats yet. Start a new conversation!</div>
+        <!-- Чаты будут загружены динамически -->
       </div>
       
-      <div class="search-results" id="search-results">
+      <div class="search-results" id="search-results" style="display: none;">
         <!-- Результаты поиска будут загружены динамически -->
-      </div>
-      
-      <!-- Профиль пользователя -->
-      <div class="user-profile">
-        <div class="avatar" id="user-avatar">U</div>
-        <div class="username" id="user-username">username</div>
-        <button class="settings-btn" id="settings-button">⚙️</button>
       </div>
     </div>
     
@@ -532,46 +397,11 @@
     </div>
   </div>
 
-  <!-- Модальное окно настроек -->
-  <div class="settings-modal" id="settings-modal">
-    <div class="settings-content">
-      <button class="close-settings">&times;</button>
-      <h2>Account Settings</h2>
-      
-      <div class="settings-section">
-        <h3>Profile Picture</h3>
-        <div class="avatar-upload">
-          <div class="avatar-preview" id="avatar-preview"></div>
-          <input type="file" id="avatar-input" accept="image/*">
-          <button id="upload-avatar">Upload</button>
-        </div>
-      </div>
-      
-      <div class="settings-section">
-        <h3>Change Username</h3>
-        <input type="text" id="new-username" placeholder="New username">
-        <button id="update-username">Update</button>
-      </div>
-      
-      <div class="settings-section">
-        <h3>Change Password</h3>
-        <input type="password" id="current-password" placeholder="Current password">
-        <input type="password" id="new-password" placeholder="New password">
-        <button id="update-password">Update</button>
-      </div>
-      
-      <div class="settings-section danger-zone">
-        <h3>Delete Account</h3>
-        <p>This will permanently delete your account and all data.</p>
-        <button id="delete-account">Delete Account</button>
-      </div>
-    </div>
-  </div>
-
   <script>
     const API_BASE_URL = 'https://pixelgit-api-vitir.onrender.com';
     let currentUser = null;
     let currentChatId = null;
+    let currentWithUser = null;
     let chatRefreshInterval = null;
     let chatEncryptionKeys = {};
 
@@ -601,18 +431,18 @@
     
     // Инициализация чата
     document.addEventListener('DOMContentLoaded', () => {
-      // Инициализация профиля
-      const savedAvatar = localStorage.getItem('userAvatar');
-      const userAvatar = document.getElementById('user-avatar');
-      if (savedAvatar) {
-        userAvatar.style.backgroundImage = `url(${savedAvatar})`;
-        userAvatar.textContent = '';
-      } else {
-        userAvatar.textContent = username.charAt(0).toUpperCase();
-      }
-      document.getElementById('user-username').textContent = username;
+      // Восстанавливаем состояние
+      const savedChatId = localStorage.getItem('currentChatId');
+      const savedWithUser = localStorage.getItem('currentWithUser');
       
       loadUserChats();
+      
+      if (savedChatId && savedWithUser) {
+        // Задержка для загрузки чатов
+        setTimeout(() => {
+          selectChat(savedChatId, savedWithUser);
+        }, 500);
+      }
       
       // Проверять новые сообщения каждые 3 секунды
       chatRefreshInterval = setInterval(loadCurrentChatMessages, 3000);
@@ -623,6 +453,8 @@
       clearInterval(chatRefreshInterval);
       localStorage.removeItem('authToken');
       localStorage.removeItem('username');
+      localStorage.removeItem('currentChatId');
+      localStorage.removeItem('currentWithUser');
       window.location.href = 'index.html';
     });
     
@@ -655,7 +487,9 @@
           throw new Error('Failed to load chats');
         }
         
-        const chats = await response.json();
+        const data = await response.json();
+        const chats = data.chats;
+        
         renderChats(chats);
       } catch (error) {
         console.error('Error loading chats:', error);
@@ -667,7 +501,7 @@
     function renderChats(chats) {
       chatsList.innerHTML = '';
       
-      if (chats.length === 0) {
+      if (!chats || chats.length === 0) {
         chatsList.innerHTML = '<div class="no-chats">No chats yet. Start a new conversation!</div>';
         return;
       }
@@ -708,6 +542,11 @@
           selectChat(chat.id, chat.with_user);
         });
         
+        // Автоматически выбираем сохраненный чат
+        if (localStorage.getItem('currentChatId') === chat.id) {
+          chatElement.classList.add('active');
+        }
+        
         chatsList.appendChild(chatElement);
       });
     }
@@ -727,8 +566,7 @@
         
         const users = await response.json();
         const filteredUsers = users.filter(user => 
-          user.username.toLowerCase().includes(query.toLowerCase()) &&
-          user.username !== username
+          user.username.toLowerCase().includes(query.toLowerCase())
         );
         
         renderSearchResults(filteredUsers);
@@ -811,6 +649,11 @@
     // Выбрать чат
     async function selectChat(chatId, withUser) {
       currentChatId = chatId;
+      currentWithUser = withUser;
+      
+      // Сохраняем в localStorage
+      localStorage.setItem('currentChatId', chatId);
+      localStorage.setItem('currentWithUser', withUser);
       
       // Обновляем UI
       document.querySelectorAll('.chat-item').forEach(item => {
@@ -835,6 +678,10 @@
         <div class="message other">
           <div class="message-sender">System</div>
           <div class="message-text">Chat with ${withUser}</div>
+        </div>
+        <div class="message other">
+          <div class="message-sender">System</div>
+          <div class="message-text">Messages are end-to-end encrypted 🔒</div>
         </div>
       `;
     }
@@ -912,23 +759,21 @@
           throw new Error('Failed to load messages');
         }
         
-        const encryptedMessages = await response.json();
+        const data = await response.json();
+        const encryptedMessages = data.messages;
         
-        // Проверяем, есть ли сообщения
-        if (encryptedMessages && encryptedMessages.messages && encryptedMessages.messages.length > 0) {
-          const decryptedMessages = encryptedMessages.messages.map(msg => {
-            return {
-              ...msg,
-              text: decryptMessage(msg.text, chatEncryptionKeys[chatId])
-            };
-          });
-          
-          renderMessages(decryptedMessages);
-        } else {
-          // Если сообщений нет, показываем соответствующее сообщение
-          renderMessages([]);
-          showSystemMessage('No messages yet. Start the conversation!');
+        if (!encryptedMessages || encryptedMessages.length === 0) {
+          return;
         }
+        
+        const decryptedMessages = encryptedMessages.map(msg => {
+          return {
+            ...msg,
+            text: decryptMessage(msg.text, chatEncryptionKeys[chatId])
+          };
+        });
+        
+        renderMessages(decryptedMessages);
       } catch (error) {
         console.error('Error loading messages:', error);
         showSystemMessage('Failed to load messages. Please try again later.');
@@ -943,11 +788,9 @@
     
     // Отображение сообщений
     function renderMessages(messages) {
-      messagesContainer.innerHTML = '';
-      
-      if (messages.length === 0) {
-        showSystemMessage('No messages yet. Start the conversation!');
-        return;
+      // Очищаем только если есть новые сообщения
+      if (messages && messages.length > 0) {
+        messagesContainer.innerHTML = '';
       }
       
       messages.forEach(message => {
@@ -1039,177 +882,6 @@
       const messagesContainer = document.getElementById('messages-container');
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     };
-    
-    // ==============================
-    // Настройки аккаунта
-    // ==============================
-    
-    // Элементы настроек
-    const settingsModal = document.getElementById('settings-modal');
-    const settingsButton = document.getElementById('settings-button');
-    const closeSettings = document.querySelector('.close-settings');
-    const avatarInput = document.getElementById('avatar-input');
-    const uploadAvatarBtn = document.getElementById('upload-avatar');
-    const avatarPreview = document.getElementById('avatar-preview');
-    const newUsernameInput = document.getElementById('new-username');
-    const updateUsernameBtn = document.getElementById('update-username');
-    const currentPasswordInput = document.getElementById('current-password');
-    const newPasswordInput = document.getElementById('new-password');
-    const updatePasswordBtn = document.getElementById('update-password');
-    const deleteAccountBtn = document.getElementById('delete-account');
-
-    // Показываем/скрываем настройки
-    settingsButton.addEventListener('click', () => {
-      settingsModal.style.display = 'flex';
-      loadUserProfile();
-    });
-
-    closeSettings.addEventListener('click', () => {
-      settingsModal.style.display = 'none';
-    });
-
-    // Загрузка аватарки
-    uploadAvatarBtn.addEventListener('click', () => {
-      if (avatarInput.files.length > 0) {
-        const file = avatarInput.files[0];
-        const reader = new FileReader();
-        
-        reader.onload = function(e) {
-          // Сохраняем в localStorage
-          localStorage.setItem('userAvatar', e.target.result);
-          avatarPreview.style.backgroundImage = `url(${e.target.result})`;
-          avatarPreview.textContent = '';
-          
-          // Обновляем аватар в профиле
-          document.getElementById('user-avatar').style.backgroundImage = `url(${e.target.result})`;
-          document.getElementById('user-avatar').textContent = '';
-        }
-        
-        reader.readAsDataURL(file);
-      }
-    });
-
-    // Загрузка профиля пользователя
-    function loadUserProfile() {
-      const username = localStorage.getItem('username');
-      const avatar = localStorage.getItem('userAvatar');
-      
-      // Обновляем превью аватара
-      if (avatar) {
-        avatarPreview.style.backgroundImage = `url(${avatar})`;
-        avatarPreview.textContent = '';
-      } else {
-        avatarPreview.style.backgroundImage = '';
-        avatarPreview.textContent = username.charAt(0).toUpperCase();
-      }
-      
-      newUsernameInput.value = username;
-    }
-
-    // Обновление имени пользователя
-    updateUsernameBtn.addEventListener('click', async () => {
-      const newUsername = newUsernameInput.value.trim();
-      
-      if (!newUsername) {
-        alert('Please enter a new username');
-        return;
-      }
-      
-      try {
-        const response = await fetch(`${API_BASE_URL}/update-username`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            newUsername,
-            currentUsername: localStorage.getItem('username')
-          })
-        });
-        
-        if (response.ok) {
-          localStorage.setItem('username', newUsername);
-          document.getElementById('user-username').textContent = newUsername;
-          document.getElementById('current-user').textContent = newUsername;
-          alert('Username updated successfully!');
-        } else {
-          const error = await response.json();
-          alert(error.message || 'Failed to update username');
-        }
-      } catch (error) {
-        console.error('Error updating username:', error);
-        alert('Failed to update username');
-      }
-    });
-
-    // Обновление пароля
-    updatePasswordBtn.addEventListener('click', async () => {
-      const currentPassword = currentPasswordInput.value;
-      const newPassword = newPasswordInput.value;
-      
-      if (!currentPassword || !newPassword) {
-        alert('Please fill all fields');
-        return;
-      }
-      
-      try {
-        const response = await fetch(`${API_BASE_URL}/update-password`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            username: localStorage.getItem('username'),
-            currentPassword,
-            newPassword
-          })
-        });
-        
-        if (response.ok) {
-          alert('Password updated successfully!');
-          currentPasswordInput.value = '';
-          newPasswordInput.value = '';
-        } else {
-          const error = await response.json();
-          alert(error.message || 'Failed to update password');
-        }
-      } catch (error) {
-        console.error('Error updating password:', error);
-        alert('Failed to update password');
-      }
-    });
-
-    // Удаление аккаунта
-    deleteAccountBtn.addEventListener('click', async () => {
-      if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-        try {
-          const response = await fetch(`${API_BASE_URL}/delete-account`, {
-            method: 'DELETE',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({
-              username: localStorage.getItem('username')
-            })
-          });
-          
-          if (response.ok) {
-            alert('Account deleted successfully');
-            localStorage.clear();
-            window.location.href = 'index.html';
-          } else {
-            const error = await response.json();
-            alert(error.message || 'Failed to delete account');
-          }
-        } catch (error) {
-          console.error('Error deleting account:', error);
-          alert('Failed to delete account');
-        }
-      }
-    });
   </script>
 </body>
 </html>
