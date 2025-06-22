@@ -53,14 +53,13 @@
     }
 
     .user-avatar {
-      width: 30px;
-      height: 30px;
-      background-color: #58a6ff;
+      width: 40px; /* Увеличили размер аватара */
+      height: 40px; /* Увеличили размер аватара */
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 14px;
+      font-size: 18px; /* Увеличили размер текста */
       overflow: hidden;
     }
 
@@ -495,10 +494,17 @@
         padding: 6px 12px;
       }
       
+      /* Фикс для поля ввода на мобильных */
       .input-area {
-        position: sticky;
+        position: fixed;
         bottom: 0;
+        left: 0;
+        right: 0;
         z-index: 100;
+      }
+      
+      .messages {
+        padding-bottom: 60px; /* Чтобы сообщения не заезжали под поле ввода */
       }
       
       .modal-content {
@@ -511,7 +517,6 @@
         font-size: 8px;
       }
       
-      /* Улучшенный дизайн для результатов поиска на мобильных */
       .search-container {
         position: sticky;
         top: 0;
@@ -528,7 +533,7 @@
       }
       
       .chats-container {
-        padding-top: 60px; /* Добавляем место для поиска */
+        padding-top: 60px;
       }
     }
   </style>
@@ -663,6 +668,7 @@
     const toggleButton = document.getElementById('toggle-sidebar');
     const searchInput = document.getElementById('search-users');
     const searchResults = document.getElementById('search-results');
+    const searchContainer = document.querySelector('.search-container');
     const chatsList = document.getElementById('chats-list');
     const messagesContainer = document.getElementById('messages-container');
     const inputArea = document.getElementById('input-area');
@@ -946,6 +952,9 @@
       });
       
       searchResults.style.display = 'block';
+      
+      // Прокрутка к началу результатов поиска
+      searchResults.scrollTop = 0;
     }
     
     // Начать новый чат
@@ -1181,7 +1190,7 @@
       }
     });
     
-    // Отправить сообщение
+    // Отправить сообщение (оптимизированная версия)
     async function sendMessage() {
       const input = document.getElementById('message-input');
       const messageText = input.value.trim();
@@ -1191,7 +1200,36 @@
       // Шифруем сообщение перед отправкой
       const encryptedMessage = encryptMessage(messageText, chatEncryptionKeys[currentChatId]);
       
+      // Сохраняем оригинальное сообщение для отображения
+      const originalMessage = messageText;
+      
+      // Очищаем поле ввода
+      input.value = '';
+      
       try {
+        // Сразу показываем сообщение в интерфейсе
+        const tempMessage = {
+          sender: username,
+          text: originalMessage,
+          timestamp: new Date().toISOString()
+        };
+        
+        const messageElement = document.createElement('div');
+        messageElement.className = 'message self';
+        
+        const timestamp = new Date();
+        const timeString = timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        messageElement.innerHTML = `
+          <div class="message-sender">You</div>
+          <div class="message-text">${originalMessage}</div>
+          <div class="message-time">${timeString}</div>
+        `;
+        
+        messagesContainer.appendChild(messageElement);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        
+        // Отправляем запрос на сервер
         const response = await fetch(`${API_BASE_URL}/messages`, {
           method: 'POST',
           headers: {
@@ -1209,16 +1247,12 @@
           throw new Error('Failed to send message');
         }
         
-        // Очищаем поле ввода
-        input.value = '';
-        
-        // Обновляем сообщения
-        await loadChatMessages(currentChatId);
-        
         // Обновляем список чатов (чтобы обновить последнее сообщение)
         loadUserChats();
       } catch (error) {
         console.error('Error sending message:', error);
+        // Возвращаем текст в поле ввода при ошибке
+        input.value = originalMessage;
         showSystemMessage('Failed to send message. Please try again.');
       }
     }
