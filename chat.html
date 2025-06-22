@@ -117,6 +117,7 @@
     .search-container {
       padding: 15px;
       border-bottom: 2px solid #30363d;
+      position: relative;
     }
 
     .search-input {
@@ -186,10 +187,17 @@
     }
 
     .search-results {
-      padding: 10px;
-      border-top: 2px solid #30363d;
-      max-height: 200px;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background-color: #161b22;
+      border: 2px solid #30363d;
+      border-top: none;
+      max-height: 300px;
       overflow-y: auto;
+      z-index: 110;
+      display: none;
     }
 
     .user-result {
@@ -461,11 +469,9 @@
         min-width: max-content;
       }
       
-      #current-user {
-        max-width: 100px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+      /* Скрываем аватар и ник на мобильных */
+      .user-avatar, #current-user {
+        display: none !important;
       }
       
       .chat-container {
@@ -504,6 +510,26 @@
         padding: 8px 10px;
         font-size: 8px;
       }
+      
+      /* Улучшенный дизайн для результатов поиска на мобильных */
+      .search-container {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background-color: #161b22;
+      }
+      
+      .search-results {
+        position: fixed;
+        top: 110px;
+        left: 10px;
+        right: 10px;
+        max-height: calc(100vh - 150px);
+      }
+      
+      .chats-container {
+        padding-top: 60px; /* Добавляем место для поиска */
+      }
     }
   </style>
 </head>
@@ -532,14 +558,13 @@
     <div class="sidebar" id="sidebar">
       <div class="search-container">
         <input type="text" class="search-input" id="search-users" placeholder="Search users...">
+        <div class="search-results" id="search-results">
+          <!-- Результаты поиска будут загружены динамически -->
+        </div>
       </div>
       
       <div class="chats-container" id="chats-list">
         <!-- Чаты будут загружены динамически -->
-      </div>
-      
-      <div class="search-results" id="search-results" style="display: none;">
-        <!-- Результаты поиска будут загружены динамически -->
       </div>
     </div>
     
@@ -675,25 +700,44 @@
       
       // Проверять новые сообщения каждые 5 секунд
       chatRefreshInterval = setInterval(loadCurrentChatMessages, 5000);
-      
-      // Решение проблемы с полем ввода на мобильных устройствах
-      adjustInputArea();
     });
     
-    // Решение проблемы с полем ввода на мобильных устройствах
-    function adjustInputArea() {
-      if (window.innerWidth <= 768) {
-        messagesContainer.style.height = 'calc(100vh - 150px)';
-        inputArea.style.position = 'fixed';
-        inputArea.style.bottom = '0';
-        inputArea.style.width = '100%';
+    // Обработчики настроек
+    window.addEventListener('resize', function() {
+      // На мобильных устройствах скрываем результаты поиска при изменении размера
+      if (window.innerWidth > 768) {
+        searchResults.style.position = 'absolute';
       } else {
-        messagesContainer.style.height = '';
-        inputArea.style.position = '';
-        inputArea.style.bottom = '';
-        inputArea.style.width = '';
+        searchResults.style.position = 'fixed';
       }
-    }
+    });
+    
+    // Открытие модального окна настроек
+    settingsButton.addEventListener('click', () => {
+      settingsModal.style.display = 'block';
+    });
+    
+    // Закрытие модального окна
+    closeSettings.addEventListener('click', () => {
+      settingsModal.style.display = 'none';
+    });
+    
+    // Переключение вкладок настроек
+    settingsTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const tabName = tab.dataset.tab;
+        
+        // Обновляем активные вкладки
+        settingsTabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        
+        // Показываем активную секцию
+        settingsSections.forEach(section => {
+          section.classList.remove('active');
+        });
+        document.getElementById(`${tabName}-section`).classList.add('active');
+      });
+    });
     
     // Обновление превью аватара
     function updateAvatarPreview(avatarData) {
@@ -729,7 +773,17 @@
       
       if (searchTerm.length > 0) {
         searchUsers(searchTerm);
+        searchResults.style.display = 'block';
       } else {
+        searchResults.style.display = 'none';
+      }
+    });
+    
+    // Закрытие результатов поиска при клике вне области
+    document.addEventListener('click', function(event) {
+      if (!searchContainer.contains(event.target) && 
+          event.target !== searchInput && 
+          !searchResults.contains(event.target)) {
         searchResults.style.display = 'none';
       }
     });
@@ -1174,36 +1228,6 @@
       const messagesContainer = document.getElementById('messages-container');
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     };
-    
-    // Обработчики настроек
-    window.addEventListener('resize', adjustInputArea);
-    
-    // Открытие модального окна настроек
-    settingsButton.addEventListener('click', () => {
-      settingsModal.style.display = 'block';
-    });
-    
-    // Закрытие модального окна
-    closeSettings.addEventListener('click', () => {
-      settingsModal.style.display = 'none';
-    });
-    
-    // Переключение вкладок настроек
-    settingsTabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        const tabName = tab.dataset.tab;
-        
-        // Обновляем активные вкладки
-        settingsTabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        
-        // Показываем активную секцию
-        settingsSections.forEach(section => {
-          section.classList.remove('active');
-        });
-        document.getElementById(`${tabName}-section`).classList.add('active');
-      });
-    });
     
     // Загрузка нового аватара
     changeAvatarBtn.addEventListener('click', () => {
