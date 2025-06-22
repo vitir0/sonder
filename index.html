@@ -208,25 +208,6 @@
       z-index: 1000;
       display: none;
     }
-
-    /* Медиа-запросы для мобильных устройств */
-    @media (max-width: 768px) {
-      .card {
-        width: 90%;
-        padding: 15px;
-      }
-      .pixel-title {
-        font-size: 36px;
-      }
-      .pixel-input, .pixel-button, .register-button {
-        width: 100%;
-        font-size: 14px;
-      }
-      .exit-button {
-        padding: 3px 6px;
-        font-size: 10px;
-      }
-    }
   </style>
 </head>
 <body>
@@ -269,7 +250,7 @@
   </div>
   
   <script>
-    const API_BASE_URL = 'https://pixelgit-api-vitir.onrender.com';
+    const API_BASE_URL = 'https://pixelgit-server.onrender.com';
     
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
