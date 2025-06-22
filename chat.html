@@ -213,6 +213,7 @@
       flex: 1;
       display: flex;
       flex-direction: column;
+      height: 100vh; /* Фиксированная высота */
       position: relative;
     }
 
@@ -222,7 +223,7 @@
       padding: 10px;
       display: flex;
       flex-direction: column;
-      min-height: 0;
+      min-height: 0; /* Критически важно */
     }
 
     .message {
@@ -267,6 +268,9 @@
       padding: 10px;
       background-color: #161b22;
       border-top: 2px solid #30363d;
+      position: sticky; /* Фиксированная позиция */
+      bottom: 0; /* Прилипает к низу */
+      z-index: 100; /* Поверх других элементов */
     }
 
     .chat-input {
@@ -317,7 +321,7 @@
       }
       
       .toggle-sidebar {
-        bottom: 70px;
+        bottom: 80px; /* Поднято над областью ввода */
         right: 15px;
         width: 45px;
         height: 45px;
@@ -325,7 +329,7 @@
       }
       
       .encryption-indicator {
-        bottom: 125px;
+        bottom: 130px; /* Поднято над областью ввода */
         right: 15px;
         font-size: 8px;
       }
@@ -354,6 +358,7 @@
       
       .chat-container {
         width: 100%;
+        height: calc(100vh - 50px); /* Учет высоты шапки */
       }
       
       .message {
@@ -367,6 +372,12 @@
       .chat-button {
         font-size: 12px;
         padding: 6px 12px;
+      }
+      
+      .input-area {
+        position: sticky; /* Фиксированная позиция на мобильных */
+        bottom: 0;
+        z-index: 100;
       }
     }
   </style>
@@ -710,6 +721,11 @@
       
       // Показываем поле ввода
       inputArea.style.display = 'flex';
+      
+      // На мобильных устройствах автоматически скрываем боковую панель
+      if (window.innerWidth <= 768) {
+        sidebar.classList.add('hidden');
+      }
       
       // Загружаем ключ шифрования для чата
       await loadEncryptionKey(chatId);
