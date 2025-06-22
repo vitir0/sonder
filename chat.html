@@ -50,13 +50,31 @@
       gap: 10px;
     }
 
+    .user-avatar {
+      width: 30px;
+      height: 30px;
+      background-color: #58a6ff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .settings-button {
+      background: none;
+      border: none;
+      color: #c9d1d9;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
     .main-container {
       display: flex;
       flex: 1;
       overflow: hidden;
     }
 
-    /* Стили для боковой панели */
     .sidebar {
       width: 300px;
       background-color: #161b22;
@@ -204,7 +222,7 @@
       padding: 10px;
       display: flex;
       flex-direction: column;
-      min-height: 0; /* Ключевое исправление для отображения сообщений */
+      min-height: 0;
     }
 
     .message {
@@ -234,6 +252,13 @@
       font-size: 12px;
       margin-top: 4px;
       word-wrap: break-word;
+    }
+
+    .message-time {
+      font-size: 8px;
+      color: #8b949e;
+      text-align: right;
+      margin-top: 4px;
     }
 
     .input-area {
@@ -306,7 +331,7 @@
       }
       
       .messenger-header {
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         padding: 5px;
       }
       
@@ -316,8 +341,8 @@
       
       .user-info {
         font-size: 10px;
-        flex-wrap: wrap;
-        justify-content: flex-end;
+        flex-wrap: nowrap;
+        min-width: max-content;
       }
       
       #current-user {
@@ -353,7 +378,9 @@
       <span class="messenger-icon">❤️‍🔥</span>
     </div>
     <div class="user-info">
+      <div class="user-avatar" id="user-avatar">U</div>
       <div id="current-user">User</div>
+      <button class="settings-button" id="settings-button">⚙️</button>
       <button id="logout-button" class="exit-button" style="padding: 4px 8px; font-size: 12px;">
         Exit &rarr;
       </button>
@@ -366,7 +393,6 @@
   </div>
   
   <div class="main-container">
-    <!-- Боковая панель с чатами -->
     <div class="sidebar" id="sidebar">
       <div class="search-container">
         <input type="text" class="search-input" id="search-users" placeholder="Search users...">
@@ -381,7 +407,6 @@
       </div>
     </div>
     
-    <!-- Основная область чата -->
     <div class="chat-container">
       <div class="messages" id="messages-container">
         <div class="message other" id="no-chat-selected">
@@ -398,12 +423,13 @@
   </div>
 
   <script>
-    const API_BASE_URL = 'https://pixelgit-api-vitir.onrender.com';
+    const API_BASE_URL = 'https://pixelgit-server.onrender.com';
     let currentUser = null;
     let currentChatId = null;
     let currentWithUser = null;
     let chatRefreshInterval = null;
     let chatEncryptionKeys = {};
+    let errorCount = 0;
 
     // Проверка авторизации
     const token = localStorage.getItem('authToken');
@@ -416,8 +442,9 @@
       currentUser = username;
     }
     
-    // Отображаем имя пользователя
+    // Отображаем имя пользователя и аватар
     document.getElementById('current-user').textContent = username;
+    document.getElementById('user-avatar').textContent = username.charAt(0).toUpperCase();
     
     // Элементы DOM
     const sidebar = document.getElementById('sidebar');
@@ -428,6 +455,7 @@
     const messagesContainer = document.getElementById('messages-container');
     const inputArea = document.getElementById('input-area');
     const noChatSelected = document.getElementById('no-chat-selected');
+    const settingsButton = document.getElementById('settings-button');
     
     // Инициализация чата
     document.addEventListener('DOMContentLoaded', () => {
@@ -438,14 +466,13 @@
       loadUserChats();
       
       if (savedChatId && savedWithUser) {
-        // Задержка для загрузки чатов
         setTimeout(() => {
           selectChat(savedChatId, savedWithUser);
         }, 500);
       }
       
-      // Проверять новые сообщения каждые 3 секунды
-      chatRefreshInterval = setInterval(loadCurrentChatMessages, 3000);
+      // Проверять новые сообщения каждые 5 секунд
+      chatRefreshInterval = setInterval(loadCurrentChatMessages, 5000);
     });
     
     // Обработчик кнопки выхода
@@ -456,6 +483,11 @@
       localStorage.removeItem('currentChatId');
       localStorage.removeItem('currentWithUser');
       window.location.href = 'index.html';
+    });
+    
+    // Обработчик кнопки настроек
+    settingsButton.addEventListener('click', () => {
+      alert('Settings functionality coming soon!');
     });
     
     // Переключение боковой панели
@@ -491,9 +523,22 @@
         const chats = data.chats;
         
         renderChats(chats);
+        errorCount = 0;
       } catch (error) {
         console.error('Error loading chats:', error);
-        showSystemMessage('Failed to load chats. Please try again later.');
+        errorCount++;
+        
+        if (errorCount <= 2) {
+          showSystemMessage('Failed to load chats. Trying again...');
+        }
+        
+        if (errorCount >= 3) {
+          clearInterval(chatRefreshInterval);
+          setTimeout(() => {
+            chatRefreshInterval = setInterval(loadCurrentChatMessages, 5000);
+            errorCount = 0;
+          }, 10000);
+        }
       }
     }
     
@@ -774,9 +819,14 @@
         });
         
         renderMessages(decryptedMessages);
+        errorCount = 0;
       } catch (error) {
         console.error('Error loading messages:', error);
-        showSystemMessage('Failed to load messages. Please try again later.');
+        errorCount++;
+        
+        if (errorCount <= 2) {
+          showSystemMessage('Failed to load messages. Trying again...');
+        }
       }
     }
     
@@ -788,10 +838,7 @@
     
     // Отображение сообщений
     function renderMessages(messages) {
-      // Очищаем только если есть новые сообщения
-      if (messages && messages.length > 0) {
-        messagesContainer.innerHTML = '';
-      }
+      messagesContainer.innerHTML = '';
       
       messages.forEach(message => {
         const messageElement = document.createElement('div');
