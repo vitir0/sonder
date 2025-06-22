@@ -18,7 +18,7 @@
       min-height: 100vh;
       margin: 0;
       overflow: hidden;
-      height: 100vh; /* Фиксированная высота */
+      height: 100vh;
     }
 
     .messenger-header {
@@ -29,7 +29,7 @@
       background-color: #0d1117;
       border-bottom: 2px solid #30363d;
       z-index: 100;
-      flex-shrink: 0; /* Запрещаем сжатие */
+      flex-shrink: 0;
     }
 
     .messenger-name {
@@ -61,6 +61,7 @@
       align-items: center;
       justify-content: center;
       font-size: 14px;
+      overflow: hidden;
     }
 
     .settings-button {
@@ -75,7 +76,7 @@
       display: flex;
       flex: 1;
       overflow: hidden;
-      height: calc(100% - 60px); /* Учитываем высоту шапки */
+      height: calc(100% - 60px);
     }
 
     .sidebar {
@@ -162,6 +163,7 @@
       justify-content: center;
       margin-right: 10px;
       font-size: 18px;
+      overflow: hidden;
     }
 
     .chat-info {
@@ -201,7 +203,7 @@
       background-color: #1f242c;
     }
 
-    .user-avatar {
+    .user-avatar-small {
       width: 30px;
       height: 30px;
       background-color: #f85149;
@@ -211,13 +213,14 @@
       justify-content: center;
       margin-right: 10px;
       font-size: 14px;
+      overflow: hidden;
     }
 
     .chat-container {
       flex: 1;
       display: flex;
       flex-direction: column;
-      height: 100%; /* Занимает всю доступную высоту */
+      height: 100%;
     }
 
     .messages {
@@ -315,6 +318,111 @@
       gap: 5px;
     }
 
+    /* Модальное окно настроек */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.8);
+      z-index: 1000;
+      overflow: auto;
+    }
+    
+    .modal-content {
+      background-color: #161b22;
+      margin: 5% auto;
+      padding: 20px;
+      border: 2px solid #30363d;
+      width: 90%;
+      max-width: 500px;
+      position: relative;
+    }
+    
+    .close-modal {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 24px;
+      cursor: pointer;
+      color: #f85149;
+    }
+    
+    .settings-tabs {
+      display: flex;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #30363d;
+    }
+    
+    .settings-tab {
+      padding: 10px 15px;
+      cursor: pointer;
+      background-color: #0d1117;
+      border: 2px solid #30363d;
+      border-bottom: none;
+      margin-right: 5px;
+      font-size: 10px;
+    }
+    
+    .settings-tab.active {
+      background-color: #238636;
+    }
+    
+    .settings-section {
+      display: none;
+    }
+    
+    .settings-section.active {
+      display: block;
+    }
+    
+    .avatar-preview {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      margin: 10px auto;
+      background-color: #58a6ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    
+    .avatar-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .settings-input {
+      width: 100%;
+      background-color: #0d1117;
+      color: #c9d1d9;
+      border: 2px solid #30363d;
+      padding: 8px;
+      margin-bottom: 10px;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 12px;
+    }
+    
+    .settings-button {
+      background-color: #238636;
+      color: #fff;
+      border: 2px solid #30363d;
+      padding: 8px 16px;
+      font-size: 12px;
+      cursor: pointer;
+      font-family: 'Press Start 2P', cursive;
+      width: 100%;
+      margin-top: 10px;
+    }
+    
+    .danger-button {
+      background-color: #f85149;
+    }
+    
     /* Для мобильных устройств */
     @media (max-width: 768px) {
       .sidebar {
@@ -365,7 +473,7 @@
       }
       
       .main-container {
-        height: calc(100% - 50px); /* Учет высоты шапки */
+        height: calc(100% - 50px);
       }
       
       .message {
@@ -385,6 +493,16 @@
         position: sticky;
         bottom: 0;
         z-index: 100;
+      }
+      
+      .modal-content {
+        margin: 10% auto;
+        width: 95%;
+      }
+      
+      .settings-tab {
+        padding: 8px 10px;
+        font-size: 8px;
       }
     }
   </style>
@@ -439,6 +557,50 @@
       </div>
     </div>
   </div>
+  
+  <!-- Модальное окно настроек -->
+  <div id="settings-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" id="close-settings">&times;</span>
+      <h2 style="text-align: center;">USER SETTINGS</h2>
+      
+      <div class="settings-tabs">
+        <div class="settings-tab active" data-tab="profile">PROFILE</div>
+        <div class="settings-tab" data-tab="password">PASSWORD</div>
+        <div class="settings-tab" data-tab="danger">DANGER ZONE</div>
+      </div>
+      
+      <!-- Секция профиля -->
+      <div id="profile-section" class="settings-section active">
+        <div class="avatar-preview" id="avatar-preview">
+          <!-- Аватар будет загружен сюда -->
+        </div>
+        
+        <input type="file" id="avatar-upload" accept="image/*" style="display: none;">
+        <button class="settings-button" id="change-avatar-btn">CHANGE AVATAR</button>
+        
+        <input type="text" class="settings-input" id="new-username" placeholder="New username">
+        <button class="settings-button" id="update-username-btn">UPDATE USERNAME</button>
+      </div>
+      
+      <!-- Секция пароля -->
+      <div id="password-section" class="settings-section">
+        <input type="password" class="settings-input" id="current-password" placeholder="Current password">
+        <input type="password" class="settings-input" id="new-password" placeholder="New password">
+        <input type="password" class="settings-input" id="confirm-password" placeholder="Confirm new password">
+        <button class="settings-button" id="update-password-btn">UPDATE PASSWORD</button>
+      </div>
+      
+      <!-- Опасная зона -->
+      <div id="danger-section" class="settings-section">
+        <p style="font-size: 10px; color: #f85149; margin-bottom: 20px; text-align: center;">
+          WARNING: These actions are irreversible!
+        </p>
+        <input type="password" class="settings-input" id="delete-password" placeholder="Enter your password">
+        <button class="settings-button danger-button" id="delete-account-btn">DELETE ACCOUNT</button>
+      </div>
+    </div>
+  </div>
 
   <script>
     const API_BASE_URL = 'https://pixelgit-api-vitir.onrender.com';
@@ -452,6 +614,7 @@
     // Проверка авторизации
     const token = localStorage.getItem('authToken');
     const username = localStorage.getItem('username');
+    const avatar = localStorage.getItem('avatar') || '';
     
     if (!token || !username) {
       alert('You are not logged in!');
@@ -462,7 +625,13 @@
     
     // Отображаем имя пользователя и аватар
     document.getElementById('current-user').textContent = username;
-    document.getElementById('user-avatar').textContent = username.charAt(0).toUpperCase();
+    const avatarElement = document.getElementById('user-avatar');
+    
+    if (avatar && avatar.startsWith('data:image')) {
+      avatarElement.innerHTML = `<img src="${avatar}" alt="Avatar" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+    } else {
+      avatarElement.textContent = username.charAt(0).toUpperCase();
+    }
     
     // Элементы DOM
     const sidebar = document.getElementById('sidebar');
@@ -475,11 +644,26 @@
     const noChatSelected = document.getElementById('no-chat-selected');
     const settingsButton = document.getElementById('settings-button');
     
+    // Элементы настроек
+    const settingsModal = document.getElementById('settings-modal');
+    const closeSettings = document.getElementById('close-settings');
+    const settingsTabs = document.querySelectorAll('.settings-tab');
+    const settingsSections = document.querySelectorAll('.settings-section');
+    const avatarPreview = document.getElementById('avatar-preview');
+    const changeAvatarBtn = document.getElementById('change-avatar-btn');
+    const avatarUpload = document.getElementById('avatar-upload');
+    const updateUsernameBtn = document.getElementById('update-username-btn');
+    const updatePasswordBtn = document.getElementById('update-password-btn');
+    const deleteAccountBtn = document.getElementById('delete-account-btn');
+    
     // Инициализация чата
     document.addEventListener('DOMContentLoaded', () => {
       // Восстанавливаем состояние
       const savedChatId = localStorage.getItem('currentChatId');
       const savedWithUser = localStorage.getItem('currentWithUser');
+      
+      // Инициализация аватара
+      updateAvatarPreview(avatar);
       
       loadUserChats();
       
@@ -491,21 +675,47 @@
       
       // Проверять новые сообщения каждые 5 секунд
       chatRefreshInterval = setInterval(loadCurrentChatMessages, 5000);
+      
+      // Решение проблемы с полем ввода на мобильных устройствах
+      adjustInputArea();
     });
+    
+    // Решение проблемы с полем ввода на мобильных устройствах
+    function adjustInputArea() {
+      if (window.innerWidth <= 768) {
+        messagesContainer.style.height = 'calc(100vh - 150px)';
+        inputArea.style.position = 'fixed';
+        inputArea.style.bottom = '0';
+        inputArea.style.width = '100%';
+      } else {
+        messagesContainer.style.height = '';
+        inputArea.style.position = '';
+        inputArea.style.bottom = '';
+        inputArea.style.width = '';
+      }
+    }
+    
+    // Обновление превью аватара
+    function updateAvatarPreview(avatarData) {
+      if (avatarData && avatarData.startsWith('data:image')) {
+        avatarPreview.innerHTML = `<img src="${avatarData}" alt="User Avatar">`;
+      } else {
+        const initial = username.charAt(0).toUpperCase();
+        avatarPreview.textContent = initial;
+        avatarPreview.style.backgroundColor = '#58a6ff';
+        avatarPreview.style.fontSize = '40px';
+      }
+    }
     
     // Обработчик кнопки выхода
     document.getElementById('logout-button').addEventListener('click', () => {
       clearInterval(chatRefreshInterval);
       localStorage.removeItem('authToken');
       localStorage.removeItem('username');
+      localStorage.removeItem('avatar');
       localStorage.removeItem('currentChatId');
       localStorage.removeItem('currentWithUser');
       window.location.href = 'index.html';
-    });
-    
-    // Обработчик кнопки настроек
-    settingsButton.addEventListener('click', () => {
-      alert('Settings functionality coming soon!');
     });
     
     // Переключение боковой панели
@@ -575,8 +785,14 @@
         chatElement.dataset.chatId = chat.id;
         chatElement.dataset.withUser = chat.with_user;
         
-        // Создаем аватар из инициалов
-        const initials = chat.with_user.split(' ').map(n => n[0]).join('').toUpperCase();
+        // Аватар собеседника
+        let avatarHtml = '';
+        if (chat.avatar && chat.avatar.startsWith('data:image')) {
+          avatarHtml = `<img src="${chat.avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;">`;
+        } else {
+          const initials = chat.with_user.charAt(0).toUpperCase();
+          avatarHtml = initials;
+        }
         
         // Форматируем время последнего сообщения
         let timeDisplay = 'Just now';
@@ -593,7 +809,7 @@
         }
         
         chatElement.innerHTML = `
-          <div class="chat-avatar">${initials}</div>
+          <div class="chat-avatar">${avatarHtml}</div>
           <div class="chat-info">
             <div class="chat-name">${chat.with_user}</div>
             <div class="last-message">${chat.last_message || 'No messages yet'}</div>
@@ -655,10 +871,16 @@
         userElement.dataset.userId = user.id;
         userElement.dataset.username = user.username;
         
-        const initials = user.username.split(' ').map(n => n[0]).join('').toUpperCase();
+        let avatarHtml = '';
+        if (user.avatar && user.avatar.startsWith('data:image')) {
+          avatarHtml = `<img src="${user.avatar}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;">`;
+        } else {
+          const initials = user.username.charAt(0).toUpperCase();
+          avatarHtml = initials;
+        }
         
         userElement.innerHTML = `
-          <div class="user-avatar">${initials}</div>
+          <div class="user-avatar-small">${avatarHtml}</div>
           <div class="chat-name">${user.username}</div>
         `;
         
@@ -952,6 +1174,238 @@
       const messagesContainer = document.getElementById('messages-container');
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     };
+    
+    // Обработчики настроек
+    window.addEventListener('resize', adjustInputArea);
+    
+    // Открытие модального окна настроек
+    settingsButton.addEventListener('click', () => {
+      settingsModal.style.display = 'block';
+    });
+    
+    // Закрытие модального окна
+    closeSettings.addEventListener('click', () => {
+      settingsModal.style.display = 'none';
+    });
+    
+    // Переключение вкладок настроек
+    settingsTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const tabName = tab.dataset.tab;
+        
+        // Обновляем активные вкладки
+        settingsTabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        
+        // Показываем активную секцию
+        settingsSections.forEach(section => {
+          section.classList.remove('active');
+        });
+        document.getElementById(`${tabName}-section`).classList.add('active');
+      });
+    });
+    
+    // Загрузка нового аватара
+    changeAvatarBtn.addEventListener('click', () => {
+      avatarUpload.click();
+    });
+    
+    avatarUpload.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const avatarData = event.target.result;
+        updateAvatarPreview(avatarData);
+        saveAvatar(avatarData);
+      };
+      reader.readAsDataURL(file);
+    });
+    
+    // Сохранение аватара на сервере
+    async function saveAvatar(avatarData) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/update-avatar`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            username: username,
+            avatar: avatarData
+          })
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+          // Обновляем аватар в шапке
+          const avatarElement = document.getElementById('user-avatar');
+          if (avatarData) {
+            avatarElement.innerHTML = `<img src="${avatarData}" alt="Avatar" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+          } else {
+            avatarElement.textContent = username.charAt(0).toUpperCase();
+          }
+          
+          // Сохраняем в localStorage
+          localStorage.setItem('avatar', avatarData);
+          showSystemMessage('Avatar updated successfully!');
+        } else {
+          showSystemMessage('Error updating avatar: ' + data.message);
+        }
+      } catch (error) {
+        console.error('Error updating avatar:', error);
+        showSystemMessage('Failed to update avatar');
+      }
+    }
+    
+    // Обновление имени пользователя
+    updateUsernameBtn.addEventListener('click', async () => {
+      const newUsername = document.getElementById('new-username').value.trim();
+      
+      if (!newUsername) {
+        showSystemMessage('Please enter a new username');
+        return;
+      }
+      
+      try {
+        const response = await fetch(`${API_BASE_URL}/update-username`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            currentUsername: username,
+            newUsername: newUsername
+          })
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+          // Обновляем данные в UI
+          username = newUsername;
+          localStorage.setItem('username', newUsername);
+          document.getElementById('current-user').textContent = newUsername;
+          
+          // Обновляем аватар
+          const avatar = localStorage.getItem('avatar') || '';
+          const avatarElement = document.getElementById('user-avatar');
+          if (avatar && avatar.startsWith('data:image')) {
+            avatarElement.innerHTML = `<img src="${avatar}" alt="Avatar" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+          } else {
+            avatarElement.textContent = newUsername.charAt(0).toUpperCase();
+          }
+          
+          // Обновляем превью аватара
+          updateAvatarPreview(avatar);
+          
+          showSystemMessage('Username updated successfully!');
+          document.getElementById('new-username').value = '';
+        } else {
+          showSystemMessage('Error updating username: ' + data.message);
+        }
+      } catch (error) {
+        console.error('Error updating username:', error);
+        showSystemMessage('Failed to update username');
+      }
+    });
+    
+    // Обновление пароля
+    updatePasswordBtn.addEventListener('click', async () => {
+      const currentPass = document.getElementById('current-password').value;
+      const newPass = document.getElementById('new-password').value;
+      const confirmPass = document.getElementById('confirm-password').value;
+      
+      if (!currentPass || !newPass || !confirmPass) {
+        showSystemMessage('All password fields are required');
+        return;
+      }
+      
+      if (newPass !== confirmPass) {
+        showSystemMessage('New passwords do not match');
+        return;
+      }
+      
+      try {
+        const response = await fetch(`${API_BASE_URL}/update-password`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            username: username,
+            currentPassword: currentPass,
+            newPassword: newPass
+          })
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+          showSystemMessage('Password updated successfully!');
+          // Очищаем поля
+          document.getElementById('current-password').value = '';
+          document.getElementById('new-password').value = '';
+          document.getElementById('confirm-password').value = '';
+        } else {
+          showSystemMessage('Error updating password: ' + data.message);
+        }
+      } catch (error) {
+        console.error('Error updating password:', error);
+        showSystemMessage('Failed to update password');
+      }
+    });
+    
+    // Удаление аккаунта
+    deleteAccountBtn.addEventListener('click', async () => {
+      const password = document.getElementById('delete-password').value;
+      
+      if (!password) {
+        showSystemMessage('Please enter your password');
+        return;
+      }
+      
+      if (!confirm('Are you sure? This will permanently delete your account and all data!')) {
+        return;
+      }
+      
+      try {
+        const response = await fetch(`${API_BASE_URL}/delete-account`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            username: username,
+            password: password
+          })
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+          // Выходим из системы
+          clearInterval(chatRefreshInterval);
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('username');
+          localStorage.removeItem('avatar');
+          localStorage.removeItem('currentChatId');
+          localStorage.removeItem('currentWithUser');
+          
+          showSystemMessage('Account deleted successfully. Redirecting...');
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 2000);
+        } else {
+          showSystemMessage('Error deleting account: ' + data.message);
+        }
+      } catch (error) {
+        console.error('Error deleting account:', error);
+        showSystemMessage('Failed to delete account');
+      }
+    });
   </script>
 </body>
 </html>
