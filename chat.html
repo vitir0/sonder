@@ -18,6 +18,7 @@
       min-height: 100vh;
       margin: 0;
       overflow: hidden;
+      height: 100vh; /* Фиксированная высота */
     }
 
     .messenger-header {
@@ -28,6 +29,7 @@
       background-color: #0d1117;
       border-bottom: 2px solid #30363d;
       z-index: 100;
+      flex-shrink: 0; /* Запрещаем сжатие */
     }
 
     .messenger-name {
@@ -73,6 +75,7 @@
       display: flex;
       flex: 1;
       overflow: hidden;
+      height: calc(100% - 60px); /* Учитываем высоту шапки */
     }
 
     .sidebar {
@@ -83,6 +86,7 @@
       flex-direction: column;
       transition: transform 0.3s ease;
       z-index: 90;
+      height: 100%;
     }
 
     .sidebar.hidden {
@@ -213,8 +217,7 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      height: 100vh; /* Фиксированная высота */
-      position: relative;
+      height: 100%; /* Занимает всю доступную высоту */
     }
 
     .messages {
@@ -223,7 +226,7 @@
       padding: 10px;
       display: flex;
       flex-direction: column;
-      min-height: 0; /* Критически важно */
+      min-height: 0;
     }
 
     .message {
@@ -268,9 +271,9 @@
       padding: 10px;
       background-color: #161b22;
       border-top: 2px solid #30363d;
-      position: sticky; /* Фиксированная позиция */
-      bottom: 0; /* Прилипает к низу */
-      z-index: 100; /* Поверх других элементов */
+      position: sticky;
+      bottom: 0;
+      z-index: 100;
     }
 
     .chat-input {
@@ -321,7 +324,7 @@
       }
       
       .toggle-sidebar {
-        bottom: 80px; /* Поднято над областью ввода */
+        bottom: 80px;
         right: 15px;
         width: 45px;
         height: 45px;
@@ -329,7 +332,7 @@
       }
       
       .encryption-indicator {
-        bottom: 130px; /* Поднято над областью ввода */
+        bottom: 130px;
         right: 15px;
         font-size: 8px;
       }
@@ -337,6 +340,7 @@
       .messenger-header {
         flex-wrap: nowrap;
         padding: 5px;
+        height: 50px;
       }
       
       .messenger-name {
@@ -358,7 +362,10 @@
       
       .chat-container {
         width: 100%;
-        height: calc(100vh - 50px); /* Учет высоты шапки */
+      }
+      
+      .main-container {
+        height: calc(100% - 50px); /* Учет высоты шапки */
       }
       
       .message {
@@ -375,7 +382,7 @@
       }
       
       .input-area {
-        position: sticky; /* Фиксированная позиция на мобильных */
+        position: sticky;
         bottom: 0;
         z-index: 100;
       }
