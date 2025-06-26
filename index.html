@@ -3,196 +3,354 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PixelGit - Login</title>
+  <title>sonder - Luxury Messenger</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      background-color: #0d1117;
-      color: #c9d1d9;
-      font-family: 'Press Start 2P', cursive;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
+    * {
       margin: 0;
-    }
-
-    .messenger-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px;
-      width: 100%;
+      padding: 0;
       box-sizing: border-box;
-      position: fixed;
-      top: 0;
-      left: 0;
-      background-color: #0d1117;
-      z-index: 100;
+      font-family: 'Inter', sans-serif;
     }
 
-    .messenger-name {
-      font-size: 20px;
-      color: #fff;
-      text-shadow: 2px 2px 0 #000;
-    }
-
-    .messenger-icon {
-      font-size: 24px;
-      color: #f85149;
-    }
-
-    .card {
-      background-color: #161b22;
-      padding: 20px;
-      border: 2px solid #30363d;
-      border-radius: 0;
-      position: relative;
-    }
-
-    .pixel-title {
-      font-size: 48px;
-      color: #f85149;
-      text-shadow: 4px 4px 0 #000;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    .pixel-title-register {
-      font-size: 32px;
-      color: #f85149;
-      text-shadow: 3px 3px 0 #000;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    .login-form {
+    body {
+      background: #121212;
+      min-height: 100vh;
       display: flex;
-      flex-direction: column;
+      justify-content: center;
       align-items: center;
+      padding: 20px;
+      color: #E0E0E0;
+      position: relative;
+      overflow: hidden;
     }
 
-    .pixel-input {
-      background-color: #0d1117;
-      color: #c9d1d9;
-      border: 2px solid #30363d;
-      padding: 8px;
-      font-size: 16px;
-      margin-bottom: 10px;
-      width: 200px;
-      border-radius: 0;
-      outline: none;
-      font-family: 'Press Start 2P', cursive;
-      transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    }
-
-    .pixel-button {
-      background-color: #238636;
-      color: #fff;
-      border: 2px solid #30363d;
-      padding: 8px 16px;
-      font-size: 16px;
-      cursor: pointer;
-      border-radius: 0;
-      outline: none;
-      font-family: 'Press Start 2P', cursive;
-      transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    }
-
-    .pixel-input:focus,
-    .pixel-button:focus {
-      border-color: #1f6feb;
-      box-shadow: 0 0 5px #1f6feb;
-    }
-
-    .register-button {
-      background-color: #30363d;
-      color: #c9d1d9;
-      border: none;
-      padding: 8px 16px;
-      font-size: 16px;
-      cursor: pointer;
-      border-radius: 0;
-      outline: none;
-      font-family: 'Press Start 2P', cursive;
-      margin-top: 10px;
-      transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    }
-
-    .register-button:hover {
-      background-color: #444;
-      color: #fff;
-    }
-
-    .register-modal {
-      display: none;
-      position: fixed;
+    /* Эффект глубины с микро-текстурой */
+    body::before {
+      content: "";
+      position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
+      background: 
+        radial-gradient(circle at 15% 20%, rgba(30, 30, 30, 0.1) 0px, transparent 1px),
+        radial-gradient(circle at 85% 80%, rgba(30, 30, 30, 0.1) 0px, transparent 1px);
+      background-size: 3px 3px;
+      z-index: -2;
+      opacity: 0.3;
+    }
+
+    /* Эффект роскошного свечения */
+    .glow-effect {
+      position: fixed;
+      width: 200%;
+      height: 200%;
+      top: -50%;
+      left: -50%;
+      background: radial-gradient(circle, rgba(212, 168, 106, 0.03) 0%, transparent 60%);
+      z-index: -1;
+      pointer-events: none;
+      animation: rotateGlow 60s linear infinite;
+    }
+
+    @keyframes rotateGlow {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 420px;
+      background: #1E1E1E;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+      position: relative;
+      border: 1px solid #333333;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 30px 30px 20px;
+      border-bottom: 1px solid #333333;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Ультра-тонкая линия роскоши */
+    .luxury-line {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #D4A86A, transparent);
+      background-size: 200% 100%;
+      animation: lineMove 8s infinite linear;
+    }
+
+    @keyframes lineMove {
+      0% { background-position: -100% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    .title-container {
+      text-align: center;
+      margin: 20px 0 30px;
+      height: 120px;
+      display: flex;
       justify-content: center;
       align-items: center;
-      z-index: 101;
+      perspective: 800px;
     }
 
-    .register-modal .card {
-      animation: fadeIn 0.3s ease-in-out;
+    .title {
+      font-size: 72px;
+      font-weight: 700;
+      position: relative;
+      color: #E0E0E0;
+      text-shadow: 0 0 10px rgba(212, 168, 106, 0.3);
+      animation: titleFloat 12s infinite ease-in-out;
+      transform-style: preserve-3d;
+      letter-spacing: -3px;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+    @keyframes titleFloat {
+      0%, 100% {
+        transform: translateY(0) rotateX(0) scale(1);
+        text-shadow: 0 0 10px rgba(212, 168, 106, 0.3);
+      }
+      25% {
+        transform: translateY(-15px) rotateX(10deg) scale(1.05);
+        text-shadow: 0 0 20px rgba(212, 168, 106, 0.5);
+      }
+      50% {
+        transform: translateY(0) rotateX(0) scale(1);
+        text-shadow: 0 0 10px rgba(212, 168, 106, 0.3);
+      }
+      75% {
+        transform: translateY(10px) rotateX(-5deg) scale(0.98);
+        text-shadow: 0 0 15px rgba(212, 168, 106, 0.4);
+      }
     }
 
-    .exit-button {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background-color: #f85149;
-      color: #fff;
-      border: none;
-      padding: 4px 8px;
-      font-size: 12px;
-      cursor: pointer;
-      border-radius: 0;
-      outline: none;
-      font-family: 'Press Start 2P', cursive;
-      transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    .title span {
+      display: inline-block;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
-    .exit-button:hover {
-      background-color: #d00000;
-      box-shadow: 0 0 5px #d00000;
+    .title:hover span {
+      color: #D4A86A;
+      transform: translateY(-5px) rotate(5deg);
+    }
+
+    .title:hover span:nth-child(2) {
+      transform: translateY(-7px) rotate(-3deg);
+      transition-delay: 0.05s;
     }
     
-    .error-message {
-      color: #f85149;
-      font-size: 10px;
-      margin-top: -5px;
+    .title:hover span:nth-child(3) {
+      transform: translateY(-10px) rotate(2deg);
+      transition-delay: 0.1s;
+    }
+    
+    .title:hover span:nth-child(4) {
+      transform: translateY(-8px) rotate(-4deg);
+      transition-delay: 0.15s;
+    }
+    
+    .title:hover span:nth-child(5) {
+      transform: translateY(-6px) rotate(3deg);
+      transition-delay: 0.2s;
+    }
+
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 10px;
+    }
+
+    .app-name {
+      font-size: 24px;
+      font-weight: 600;
+      color: #E0E0E0;
+      letter-spacing: 1px;
+      position: relative;
+    }
+
+    /* Эффект тонкого свечения для названия */
+    .app-name::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 30px;
+      height: 2px;
+      background: #D4A86A;
+      transition: width 0.4s ease;
+    }
+
+    .app-header:hover .app-name::after {
+      width: 100%;
+    }
+
+    .app-icon {
+      width: 30px;
+      height: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      animation: pulse 3s infinite;
+      background: #1E1E1E;
+      border-radius: 50%;
+      border: 1px solid #333333;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .app-icon:hover {
+      transform: scale(1.15);
+      border-color: #D4A86A;
+    }
+    
+    .app-icon img {
+      width: 18px;
+      height: 18px;
+      object-fit: contain;
+      filter: brightness(1.2);
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    .card {
+      padding: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+      position: relative;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: #9E9E9E;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 16px;
+      border-radius: 10px;
+      background: #242424;
+      border: 1px solid #333333;
+      color: #E0E0E0;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      outline: none;
+    }
+
+    .form-input:focus {
+      border-color: #5A7BA5;
+      box-shadow: 0 0 0 2px rgba(90, 123, 165, 0.2);
+    }
+
+    .form-input::placeholder {
+      color: #9E9E9E;
+    }
+
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .btn {
+      padding: 16px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      outline: none;
+      border: none;
       text-align: center;
-      max-width: 200px;
-      line-height: 1.4;
+      position: relative;
+      overflow: hidden;
+      letter-spacing: 0.5px;
+    }
+
+    /* Эффект роскоши для кнопки */
+    .btn-primary {
+      background: #D4A86A;
+      color: #121212;
+      box-shadow: 0 4px 15px rgba(212, 168, 106, 0.3);
+      position: relative;
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: 0.5s;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(212, 168, 106, 0.4);
+    }
+
+    .btn-primary:hover::before {
+      left: 100%;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: #5A7BA5;
+      border: 1px solid #5A7BA5;
+      transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(90, 123, 165, 0.08);
+    }
+
+    .error-message {
+      color: #e57373;
+      font-size: 13px;
+      margin-top: 5px;
+      display: block;
+      min-height: 20px;
     }
 
     .success-message {
-      color: #3fb950;
-      font-size: 12px;
-      margin-bottom: 10px;
+      color: #81c784;
+      font-size: 14px;
       text-align: center;
+      margin: 15px 0;
       display: none;
     }
 
     .welcome-message {
-      color: #58a6ff;
-      font-size: 14px;
-      margin-bottom: 10px;
+      color: #64b5f6;
+      font-size: 16px;
       text-align: center;
+      margin: 15px 0;
+      font-weight: 500;
     }
 
     .server-offline {
@@ -200,51 +358,287 @@
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      background-color: #f85149;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 4px;
-      font-size: 12px;
+      background: #242424;
+      color: #E0E0E0;
+      padding: 12px 25px;
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 500;
       z-index: 1000;
       display: none;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      border: 1px solid #333333;
+      backdrop-filter: blur(5px);
+    }
+
+    .register-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      padding: 15px;
+    }
+
+    .register-modal.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content {
+      background: #1E1E1E;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 450px;
+      padding: 30px;
+      position: relative;
+      transform: translateY(20px);
+      transition: transform 0.4s ease;
+      border: 1px solid #333333;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .register-modal.active .modal-content {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      position: sticky;
+      top: 0;
+      background: #1E1E1E;
+      padding: 10px 0;
+      z-index: 1;
+    }
+
+    .modal-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #E0E0E0;
+    }
+
+    .close-btn {
+      background: transparent;
+      border: 1px solid #333333;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #9E9E9E;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .close-btn:hover {
+      border-color: #5A7BA5;
+      color: #5A7BA5;
+      transform: rotate(90deg);
+    }
+
+    /* Элегантные частицы меди */
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      background: rgba(212, 168, 106, 0.08);
+      border-radius: 50%;
+      animation: float 15s infinite linear;
+      opacity: 0;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translate(0, 0) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 0.3;
+      }
+      90% {
+        opacity: 0.1;
+      }
+      100% {
+        transform: translate(100vw, -100vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* Адаптация для мобильных устройств */
+    @media (max-width: 768px) {
+      .title {
+        font-size: 56px;
+      }
+      
+      .login-container {
+        max-width: 100%;
+      }
+      
+      .app-name {
+        font-size: 20px;
+      }
+      
+      .card {
+        padding: 20px;
+      }
+      
+      .modal-content {
+        padding: 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .title {
+        font-size: 42px;
+      }
+      
+      .header, .card {
+        padding: 20px;
+      }
+      
+      .app-name {
+        font-size: 18px;
+      }
+      
+      .form-input {
+        padding: 14px;
+        font-size: 14px;
+      }
+      
+      .btn {
+        padding: 14px;
+        font-size: 14px;
+      }
+      
+      .modal-content {
+        padding: 15px;
+      }
+      
+      .modal-title {
+        font-size: 20px;
+      }
+    }
+
+    @media (max-height: 700px) {
+      .title-container {
+        height: 80px;
+      }
+      
+      .title {
+        font-size: 48px;
+      }
     }
   </style>
 </head>
 <body>
+  <div class="glow-effect"></div>
+  <div class="particles" id="particles"></div>
+  
   <div class="server-offline" id="server-offline">Server is offline. Trying to reconnect...</div>
   
-  <div class="messenger-header">
-    <span class="messenger-name">PixelGit</span>
-    <span class="messenger-icon">❤️‍🔥</span>
-  </div>
-
-  <div class="card">
-    <button class="exit-button" id="main-exit-button">Exit &rarr;</button>
-    <h1 class="pixel-title">Hello</h1>
-    <div class="login-form" id="login-form">
-      <input type="text" class="pixel-input" placeholder="Username" id="login-username" required>
-      <div id="login-user-error" class="error-message"></div>
-      <input type="password" class="pixel-input" placeholder="Password" id="login-password" required>
-      <div id="login-pass-error" class="error-message"></div>
-      <div id="login-success" class="success-message"></div>
-      <button type="submit" class="pixel-button" id="login-button">Login</button>
-      <button type="button" class="register-button" id="register-button">Register</button>
+  <div class="login-container">
+    <div class="header">
+      <div class="luxury-line"></div>
+      <div class="app-header">
+        <div class="app-name">sonder</div>
+        <div class="app-icon"><img src="https://i.ibb.co/j9VJgdrw/S.png" alt="sonder Logo"></div>
+      </div>
+    </div>
+    
+    <div class="title-container">
+      <h1 class="title">
+        <span>H</span>
+        <span>E</span>
+        <span>L</span>
+        <span>L</span>
+        <span>O</span>
+      </h1>
+    </div>
+    
+    <div class="card">
+      <div class="login-form" id="login-form">
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <input type="text" class="form-input" placeholder="Enter your username" id="login-username" required>
+          <div id="login-user-error" class="error-message"></div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" placeholder="Enter your password" id="login-password" required>
+          <div id="login-pass-error" class="error-message"></div>
+        </div>
+        
+        <div id="login-success" class="success-message"></div>
+        
+        <div class="btn-group">
+          <button class="btn btn-primary" id="login-button">Login</button>
+          <button class="btn btn-secondary" id="register-button">Create Account</button>
+        </div>
+      </div>
     </div>
   </div>
 
   <div class="register-modal" id="register-modal">
-    <div class="card">
-      <button class="exit-button" id="register-exit-button">Exit &rarr;</button>
-      <h1 class="pixel-title-register">Register</h1>
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">Create Account</div>
+        <button class="close-btn" id="register-exit-button">×</button>
+      </div>
+      
       <div class="login-form" id="register-form">
-        <input type="text" class="pixel-input" placeholder="Username" id="reg-username" required>
-        <div id="reg-user-error" class="error-message"></div>
-        <input type="password" class="pixel-input" placeholder="Password" id="reg-password" required>
-        <div id="reg-pass-error" class="error-message"></div>
-        <input type="password" class="pixel-input" placeholder="Confirm Password" id="reg-confirm" required>
-        <div id="reg-confirm-error" class="error-message"></div>
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <input type="text" class="form-input" placeholder="Choose a username" id="reg-username" required>
+          <div id="reg-user-error" class="error-message"></div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Email <span style="color: #9E9E9E; font-weight: 400;">(optional)</span></label>
+          <input type="email" class="form-input" placeholder="Enter your email" id="reg-email">
+          <div id="reg-email-error" class="error-message"></div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-input" placeholder="Create a password" id="reg-password" required>
+          <div id="reg-pass-error" class="error-message"></div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Confirm Password</label>
+          <input type="password" class="form-input" placeholder="Confirm your password" id="reg-confirm" required>
+          <div id="reg-confirm-error" class="error-message"></div>
+        </div>
+        
         <div id="reg-success" class="success-message"></div>
-        <button type="submit" class="pixel-button" id="register-submit">Register</button>
+        
+        <button class="btn btn-primary" id="register-submit">Register</button>
       </div>
     </div>
   </div>
@@ -257,13 +651,44 @@
     const registerModal = document.getElementById('register-modal');
     const registerButton = document.getElementById('register-button');
     const registerExitButton = document.getElementById('register-exit-button');
-    const mainExitButton = document.getElementById('main-exit-button');
     const loginBtn = document.getElementById('login-button');
     const registerSubmitBtn = document.getElementById('register-submit');
     const serverOffline = document.getElementById('server-offline');
+    
+    // Создание частиц меди для фона
+    function createParticles() {
+      const particlesContainer = document.getElementById('particles');
+      const particleCount = 15;
+      
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        
+        // Случайный размер
+        const size = Math.random() * 5 + 1;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        
+        // Начальная позиция
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.top = `${Math.random() * 100}%`;
+        
+        // Случайная задержка анимации
+        particle.style.animationDelay = `${Math.random() * 15}s`;
+        particle.style.animationDuration = `${15 + Math.random() * 20}s`;
+        
+        // Случайный оттенок меди
+        const hue = 30 + Math.random() * 10; // 30-40 (золотистые оттенки)
+        particle.style.background = `hsla(${hue}, 50%, 60%, ${0.05 + Math.random() * 0.1})`;
+        
+        particlesContainer.appendChild(particle);
+      }
+    }
 
     // Проверка авторизации при загрузке
     document.addEventListener('DOMContentLoaded', () => {
+      createParticles();
+      
       const token = localStorage.getItem('authToken');
       const username = localStorage.getItem('username');
       
@@ -310,24 +735,17 @@
         return;
       }
       
-      registerModal.style.display = 'flex';
+      registerModal.classList.add('active');
     });
 
     registerExitButton.addEventListener('click', () => {
-      registerModal.style.display = 'none';
+      registerModal.classList.remove('active');
       clearRegisterForm();
-    });
-
-    mainExitButton.addEventListener('click', () => {
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('username');
-      alert('Вы вышли из системы');
-      window.location.reload();
     });
 
     window.addEventListener('click', (e) => {
       if (e.target === registerModal) {
-        registerModal.style.display = 'none';
+        registerModal.classList.remove('active');
         clearRegisterForm();
       }
     });
@@ -337,8 +755,8 @@
       const username = document.getElementById('login-username').value;
       const password = document.getElementById('login-password').value;
       
-      if (!validateField(username, 'login-user-error', 'Username обязателен')) return;
-      if (!validateField(password, 'login-pass-error', 'Password обязателен')) return;
+      if (!validateField(username, 'login-user-error', 'Username is required')) return;
+      if (!validateField(password, 'login-pass-error', 'Password is required')) return;
       
       // Проверить доступность сервера
       const serverOnline = await checkServerStatus();
@@ -359,6 +777,7 @@
         if (response.ok) {
           localStorage.setItem('authToken', data.token);
           localStorage.setItem('username', username);
+          localStorage.setItem('avatar', data.avatar || '');
           
           // Показываем приветствие
           const welcome = document.createElement('div');
@@ -384,6 +803,7 @@
     registerSubmitBtn.addEventListener('click', async () => {
       clearMessages();
       const username = document.getElementById('reg-username').value;
+      const email = document.getElementById('reg-email').value;
       const password = document.getElementById('reg-password').value;
       const confirm = document.getElementById('reg-confirm').value;
       
@@ -399,6 +819,9 @@
         return;
       }
       
+      // Генерация уникального аватара
+      const avatar = `https://api.dicebear.com/7.x/identicon/svg?seed=${username}&scale=80`;
+      
       // Проверить доступность сервера
       const serverOnline = await checkServerStatus();
       if (!serverOnline) {
@@ -410,20 +833,23 @@
         const response = await fetch(`${API_BASE_URL}/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password })
+          body: JSON.stringify({ username, email, password, avatar })
         });
         
         const data = await response.json();
         
         if (response.ok) {
-          document.getElementById('reg-success').textContent = 'Registration successful! Please login.';
+          localStorage.setItem('authToken', data.token);
+          localStorage.setItem('username', username);
+          localStorage.setItem('avatar', avatar);
+          
+          document.getElementById('reg-success').textContent = 'Registration successful! Redirecting to chat...';
           document.getElementById('reg-success').style.display = 'block';
           
-          // Автоматическое закрытие формы через 3 секунды
+          // Перенаправление в чат через 2 секунды
           setTimeout(() => {
-            registerModal.style.display = 'none';
-            clearRegisterForm();
-          }, 3000);
+            window.location.href = 'chat.html';
+          }, 2000);
         } else {
           showError('reg-user-error', data.message || 'Registration error');
         }
@@ -471,6 +897,7 @@
 
     function clearRegisterForm() {
       document.getElementById('reg-username').value = '';
+      document.getElementById('reg-email').value = '';
       document.getElementById('reg-password').value = '';
       document.getElementById('reg-confirm').value = '';
       clearMessages();
