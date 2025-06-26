@@ -919,6 +919,7 @@
     let chatRefreshInterval = null;
     let chatEncryptionKeys = {};
     let errorCount = 0;
+    let currentMessages = new Map(); // Для хранения сообщений по ID
 
     // Проверка авторизации
     const token = localStorage.getItem('authToken');
@@ -934,15 +935,10 @@
     
     // Функция для генерации или получения аватара
     function getUserAvatar(username) {
-      // Если аватар уже есть, возвращаем его
-      if (avatar && avatar.startsWith('http') || avatar.startsWith('data:image')) {
+      if (avatar && (avatar.startsWith('http') || avatar.startsWith('data:image'))) {
         return avatar;
       }
-      
-      // Если нет - генерируем новый
-      const newAvatar = `https://api.dicebear.com/7.x/identicon/svg?seed=${username}&scale=80`;
-      localStorage.setItem('avatar', newAvatar);
-      return newAvatar;
+      return `https://api.dicebear.com/7.x/identicon/svg?seed=${username}&scale=80`;
     }
     
     // Элементы DOM
@@ -979,20 +975,21 @@
       
       // Получаем или генерируем аватар
       avatar = getUserAvatar(username);
+      localStorage.setItem('avatar', avatar);
       
       // Отображаем имя пользователя и аватар
       document.getElementById('current-user').textContent = username;
       const avatarElement = document.getElementById('user-avatar');
       avatarElement.innerHTML = `<img src="${avatar}" alt="Avatar">`;
       
-      // Восстанавливаем состояние
-      const savedChatId = localStorage.getItem('currentChatId');
-      const savedWithUser = localStorage.getItem('currentWithUser');
-      
       // Инициализация превью аватара в настройках
       updateAvatarPreview(avatar);
       
       loadUserChats();
+      
+      // Восстанавливаем состояние
+      const savedChatId = localStorage.getItem('currentChatId');
+      const savedWithUser = localStorage.getItem('currentWithUser');
       
       if (savedChatId && savedWithUser) {
         setTimeout(() => {
@@ -1000,8 +997,15 @@
         }, 500);
       }
       
-      // Проверять новые сообщения каждые 2 секунды
-      chatRefreshInterval = setInterval(loadCurrentChatMessages, 2000);
+      // Устанавливаем интервал для обновления чатов
+      chatRefreshInterval = setInterval(loadUserChats, 10000);
+      
+      // Добавляем обработчик фокуса окна
+      window.addEventListener('focus', () => {
+        if (currentChatId) {
+          loadChatMessages(currentChatId);
+        }
+      });
     });
     
     // Создание частиц меди для фона
@@ -1148,7 +1152,7 @@
         if (errorCount >= 3) {
           clearInterval(chatRefreshInterval);
           setTimeout(() => {
-            chatRefreshInterval = setInterval(loadCurrentChatMessages, 2000);
+            chatRefreshInterval = setInterval(loadUserChats, 10000);
             errorCount = 0;
           }, 10000);
         }
@@ -1175,7 +1179,6 @@
         if (chat.avatar && (chat.avatar.startsWith('data:image') || chat.avatar.startsWith('http'))) {
           avatarHtml = `<img src="${chat.avatar}" alt="Avatar">`;
         } else {
-          // Генерируем аватар для собеседника
           const generatedAvatar = `https://api.dicebear.com/7.x/identicon/svg?seed=${chat.with_user}&scale=80`;
           avatarHtml = `<img src="${generatedAvatar}" alt="Avatar">`;
         }
@@ -1261,7 +1264,6 @@
         if (user.avatar && (user.avatar.startsWith('data:image') || user.avatar.startsWith('http'))) {
           avatarHtml = `<img src="${user.avatar}" alt="Avatar">`;
         } else {
-          // Генерируем аватар для пользователя
           const generatedAvatar = `https://api.dicebear.com/7.x/identicon/svg?seed=${user.username}&scale=80`;
           avatarHtml = `<img src="${generatedAvatar}" alt="Avatar">`;
         }
@@ -1325,6 +1327,7 @@
     async function selectChat(chatId, withUser) {
       currentChatId = chatId;
       currentWithUser = withUser;
+      currentMessages.clear();
       
       // Сохраняем в localStorage
       localStorage.setItem('currentChatId', chatId);
@@ -1354,12 +1357,6 @@
       
       // Устанавливаем заголовок чата
       noChatSelected.style.display = 'none';
-      messagesContainer.innerHTML = `
-        <div class="message other">
-          <div class="message-sender">System</div>
-          <div class="message-text">Chat with ${withUser}</div>
-        </div>
-      `;
     }
     
     // Загрузка ключа шифрования
@@ -1465,81 +1462,88 @@
       }
     }
     
-    // Загрузка новых сообщений для текущего чата
-    async function loadCurrentChatMessages() {
-      if (!currentChatId) return;
-      await loadChatMessages(currentChatId);
-    }
-    
     // Отображение сообщений
     function renderMessages(messages) {
-      messagesContainer.innerHTML = '';
+      // Очищаем контейнер только при первой загрузке
+      if (currentMessages.size === 0) {
+        messagesContainer.innerHTML = '';
+      }
       
+      // Добавляем новые сообщения
       messages.forEach(message => {
-        const messageElement = document.createElement('div');
-        messageElement.className = message.sender === username ? 
-          'message self' : 'message other';
+        if (currentMessages.has(message.id)) return;
         
-        const timestamp = new Date(message.timestamp);
-        const timeString = timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        
-        let avatarHtml = '';
-        if (message.avatar && (message.avatar.startsWith('data:image') || message.avatar.startsWith('http'))) {
-          avatarHtml = `<img src="${message.avatar}" alt="Avatar">`;
-        } else {
-          // Генерируем аватар для отправителя
-          const generatedAvatar = `https://api.dicebear.com/7.x/identicon/svg?seed=${message.sender}&scale=80`;
-          avatarHtml = `<img src="${generatedAvatar}" alt="Avatar">`;
-        }
-        
-        let contentHtml = '';
-        if (message.file_type) {
-          if (message.file_type === 'image') {
-            contentHtml = `
-              <div class="file-message">
-                <img src="${message.file_data}" alt="Image">
-              </div>
-            `;
-          } else if (message.file_type === 'video') {
-            contentHtml = `
-              <div class="file-message">
-                <video controls src="${message.file_data}" style="max-width: 200px;"></video>
-              </div>
-            `;
-          }
-        } else {
-          contentHtml = `<div class="message-text">${message.text}</div>`;
-        }
-        
-        // Кнопка удаления для своих сообщений
-        const deleteBtn = message.sender === username ? 
-          `<button class="delete-btn" data-id="${message.id}">✕</button>` : '';
-        
-        messageElement.innerHTML = `
-          <div class="message-header">
-            <div class="message-avatar">${avatarHtml}</div>
-            <div class="message-sender">${message.sender === username ? 'You' : message.sender}</div>
-          </div>
-          <div class="message-content">
-            ${contentHtml}
-            <div class="message-time">${timeString}</div>
-          </div>
-          ${deleteBtn}
-        `;
-        
+        currentMessages.set(message.id, message);
+        const messageElement = createMessageElement(message);
         messagesContainer.appendChild(messageElement);
-      });
-      
-      // Добавляем обработчики для кнопок удаления
-      document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const messageId = btn.dataset.id;
-          await deleteMessage(messageId);
-        });
       });
       
       // Прокрутка вниз
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+    
+    // Создание элемента сообщения
+    function createMessageElement(message) {
+      const messageElement = document.createElement('div');
+      messageElement.className = message.sender === username ? 
+        'message self' : 'message other';
+      messageElement.dataset.id = message.id;
+      
+      const timestamp = new Date(message.timestamp);
+      const timeString = timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      
+      let avatarHtml = '';
+      if (message.avatar && (message.avatar.startsWith('data:image') || message.avatar.startsWith('http'))) {
+        avatarHtml = `<img src="${message.avatar}" alt="Avatar">`;
+      } else {
+        const generatedAvatar = `https://api.dicebear.com/7.x/identicon/svg?seed=${message.sender}&scale=80`;
+        avatarHtml = `<img src="${generatedAvatar}" alt="Avatar">`;
+      }
+      
+      let contentHtml = '';
+      if (message.file_type) {
+        if (message.file_type === 'image') {
+          contentHtml = `
+            <div class="file-message">
+              <img src="${message.file_data}" alt="Image">
+            </div>
+          `;
+        } else if (message.file_type === 'video') {
+          contentHtml = `
+            <div class="file-message">
+              <video controls src="${message.file_data}" style="max-width: 200px;"></video>
+            </div>
+          `;
+        }
+      } else {
+        contentHtml = `<div class="message-text">${message.text}</div>`;
+      }
+      
+      // Кнопка удаления для своих сообщений
+      const deleteBtn = message.sender === username ? 
+        `<button class="delete-btn" data-id="${message.id}">✕</button>` : '';
+      
+      messageElement.innerHTML = `
+        <div class="message-header">
+          <div class="message-avatar">${avatarHtml}</div>
+          <div class="message-sender">${message.sender === username ? 'You' : message.sender}</div>
+        </div>
+        <div class="message-content">
+          ${contentHtml}
+          <div class="message-time">${timeString}</div>
+        </div>
+        ${deleteBtn}
+      `;
+      
+      // Добавляем обработчик для кнопки удаления
+      if (message.sender === username) {
+        const deleteBtn = messageElement.querySelector('.delete-btn');
+        deleteBtn.addEventListener('click', async () => {
+          await deleteMessage(message.id);
+        });
+      }
+      
+      return messageElement;
     }
     
     // Удаление сообщения
@@ -1552,8 +1556,14 @@
           }
         });
         
-        // Перезагружаем сообщения
-        loadChatMessages(currentChatId);
+        // Удаляем сообщение из DOM
+        const messageElement = document.querySelector(`.message[data-id="${messageId}"]`);
+        if (messageElement) {
+          messageElement.remove();
+        }
+        
+        // Удаляем из кэша
+        currentMessages.delete(messageId);
       } catch (error) {
         console.error('Error deleting message:', error);
         showSystemMessage('Failed to delete message');
@@ -1624,50 +1634,10 @@
       // Шифруем сообщение перед отправкой
       const encryptedMessage = encryptMessage(messageText, chatEncryptionKeys[currentChatId]);
       
-      // Сохраняем оригинальное сообщение для отображения
-      const originalMessage = messageText;
-      
       // Очищаем поле ввода
       input.value = '';
       
       try {
-        // Сразу показываем сообщение в интерфейсе
-        const tempMessage = {
-          sender: username,
-          text: originalMessage,
-          timestamp: new Date().toISOString(),
-          avatar: avatar
-        };
-        
-        const messageElement = document.createElement('div');
-        messageElement.className = 'message self';
-        
-        const timestamp = new Date();
-        const timeString = timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        
-        let avatarHtml = '';
-        if (avatar && (avatar.startsWith('data:image') || avatar.startsWith('http'))) {
-          avatarHtml = `<img src="${avatar}" alt="Avatar">`;
-        } else {
-          // Генерируем аватар для себя
-          const generatedAvatar = `https://api.dicebear.com/7.x/identicon/svg?seed=${username}&scale=80`;
-          avatarHtml = `<img src="${generatedAvatar}" alt="Avatar">`;
-        }
-        
-        messageElement.innerHTML = `
-          <div class="message-header">
-            <div class="message-avatar">${avatarHtml}</div>
-            <div class="message-sender">You</div>
-          </div>
-          <div class="message-content">
-            <div class="message-text">${originalMessage}</div>
-            <div class="message-time">${timeString}</div>
-          </div>
-        `;
-        
-        messagesContainer.appendChild(messageElement);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        
         // Отправляем запрос на сервер
         const response = await fetch(`${API_BASE_URL}/messages`, {
           method: 'POST',
@@ -1686,12 +1656,31 @@
           throw new Error('Failed to send message');
         }
         
+        const data = await response.json();
+        const message = data.message;
+        
+        // Дешифруем сообщение для отображения
+        if (!message.file_type) {
+          message.text = decryptMessage(message.text, chatEncryptionKeys[currentChatId]);
+        }
+        
+        // Добавляем аватар
+        message.avatar = avatar;
+        
+        // Добавляем сообщение в интерфейс
+        if (!currentMessages.has(message.id)) {
+          currentMessages.set(message.id, message);
+          const messageElement = createMessageElement(message);
+          messagesContainer.appendChild(messageElement);
+          messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
         // Обновляем список чатов (чтобы обновить последнее сообщение)
         loadUserChats();
       } catch (error) {
         console.error('Error sending message:', error);
         // Возвращаем текст в поле ввода при ошибке
-        input.value = originalMessage;
+        input.value = messageText;
         showSystemMessage('Failed to send message. Please try again.');
       }
     }
@@ -1730,59 +1719,6 @@
     
     async function sendFile(fileData, fileType) {
       try {
-        // Сразу показываем файл в интерфейсе
-        const tempMessage = {
-          sender: username,
-          file_data: fileData,
-          file_type: fileType,
-          timestamp: new Date().toISOString(),
-          avatar: avatar
-        };
-        
-        const messageElement = document.createElement('div');
-        messageElement.className = 'message self';
-        
-        const timestamp = new Date();
-        const timeString = timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        
-        let avatarHtml = '';
-        if (avatar && (avatar.startsWith('data:image') || avatar.startsWith('http'))) {
-          avatarHtml = `<img src="${avatar}" alt="Avatar">`;
-        } else {
-          // Генерируем аватар для себя
-          const generatedAvatar = `https://api.dicebear.com/7.x/identicon/svg?seed=${username}&scale=80`;
-          avatarHtml = `<img src="${generatedAvatar}" alt="Avatar">`;
-        }
-        
-        let contentHtml = '';
-        if (fileType === 'image') {
-          contentHtml = `
-            <div class="file-message">
-              <img src="${fileData}" alt="Image">
-            </div>
-          `;
-        } else if (fileType === 'video') {
-          contentHtml = `
-            <div class="file-message">
-              <video controls src="${fileData}" style="max-width: 200px;"></video>
-            </div>
-          `;
-        }
-        
-        messageElement.innerHTML = `
-          <div class="message-header">
-            <div class="message-avatar">${avatarHtml}</div>
-            <div class="message-sender">You</div>
-          </div>
-          <div class="message-content">
-            ${contentHtml}
-            <div class="message-time">${timeString}</div>
-          </div>
-        `;
-        
-        messagesContainer.appendChild(messageElement);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        
         // Отправляем запрос на сервер
         const response = await fetch(`${API_BASE_URL}/messages`, {
           method: 'POST',
@@ -1802,6 +1738,20 @@
           throw new Error('Failed to send file');
         }
         
+        const data = await response.json();
+        const message = data.message;
+        
+        // Добавляем аватар
+        message.avatar = avatar;
+        
+        // Добавляем сообщение в интерфейс
+        if (!currentMessages.has(message.id)) {
+          currentMessages.set(message.id, message);
+          const messageElement = createMessageElement(message);
+          messagesContainer.appendChild(messageElement);
+          messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
         // Обновляем список чатов (чтобы обновить последнее сообщение)
         loadUserChats();
       } catch (error) {
@@ -1809,12 +1759,6 @@
         showSystemMessage('Failed to send file. Please try again.');
       }
     }
-    
-    // Автопрокрутка при загрузке
-    window.onload = function() {
-      const messagesContainer = document.getElementById('messages-container');
-      messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    };
     
     // Загрузка нового аватара
     changeAvatarBtn.addEventListener('click', () => {
