@@ -1,4 +1,4 @@
-![Forge Logo](asciiDither-filtered-image (11).png)
+![sonder](sonder.svg)
 
 # Sonder
 
