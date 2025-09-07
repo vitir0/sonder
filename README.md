@@ -1,4 +1,4 @@
-![sonder](sonder.svg)
+![sonder logo](Sonder.svg)
 
 # Sonder
 
